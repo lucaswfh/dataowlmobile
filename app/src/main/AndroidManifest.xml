@@ -18,4 +18,10 @@
         </activity>
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.IMAGE_CAPTURE"
+        android:required="true" />
+
 </manifest>
