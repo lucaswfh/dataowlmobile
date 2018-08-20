@@ -26,6 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Send Image"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:enabled="false"/>
 
 </LinearLayout>
