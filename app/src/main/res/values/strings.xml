@@ -3,10 +3,8 @@
     <string name="app_name">DataOwl</string>
 
     <!--Auth0-->
-    <resources>
-        <string name="com_auth0_client_id">3dRBNMBtBuW7LQOETJT4fsA81cEaEQoi</string>
-        <string name="com_auth0_domain">killscript.auth0.com</string>
-    </resources>
+    <string name="com_auth0_client_id">3dRBNMBtBuW7LQOETJT4fsA81cEaEQoi</string>
+    <string name="com_auth0_domain">killscript.auth0.com</string>
     <!--/Auth0-->
 
 </resources>
