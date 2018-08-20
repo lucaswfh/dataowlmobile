@@ -6,7 +6,7 @@ import java.io.ByteArrayOutputStream
 /**
  * Created by wolfx on 18/08/2018.
  */
-class HerbImage constructor(image: ByteArray) {
+class HerbImage constructor(val image: ByteArray) {
 
     class Builder {
 
