@@ -1,6 +1,7 @@
 package ar.edu.unq.dataowl
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.support.v7.app.AppCompatActivity
@@ -13,9 +14,14 @@ import android.widget.Toast
 import ar.edu.unq.dataowl.appmodel.MainActivityAppModel
 import ar.edu.unq.dataowl.model.HerbImage
 import ar.edu.unq.dataowl.services.HttpService
+import com.auth0.android.Auth0
+import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.provider.AuthCallback
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.auth0.android.provider.WebAuthProvider
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,10 +31,18 @@ class MainActivity : AppCompatActivity() {
 
     val CAMERA_REQUEST_CODE = 0
 
+    var auth0: Auth0? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         setOnButtonClickListeners()
+
+        auth0 = Auth0(this);
+        auth0?.setOIDCConformant(true);
+
+        login()
     }
 
 //    take photo activity result
@@ -49,6 +63,29 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this,"Unrecognized request code", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun login() {
+        val that: MainActivity = this
+        WebAuthProvider.init(auth0 as Auth0)
+                .withScheme("DataOwlMobile")
+                .withAudience(String.format("https://%s/userinfo", getString(R.string.com_auth0_domain)))
+                .start(this@MainActivity, object : AuthCallback {
+                    override fun onSuccess(credentials: com.auth0.android.result.Credentials) {
+                        // Store credentials
+                        // Navigate to your main activity
+                        val btn: Button = findViewById<Button>(R.id.button_sendImage)
+                        btn.isEnabled = true
+                    }
+
+                    override fun onFailure(dialog: Dialog) {
+                        // Show error Dialog to user
+                    }
+
+                    override fun onFailure(exception: AuthenticationException) {
+                        // Show error to user
+                    }
+                })
     }
 
 //    sets on click button listeners
