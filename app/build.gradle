@@ -26,10 +26,10 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:27.1.1'
+    implementation 'com.android.support:support-annotations:27.1.1'
 
 //    Gson
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
 
 //    Auth0
 //    https://mvnrepository.com/artifact/com.auth0/java-jwt
