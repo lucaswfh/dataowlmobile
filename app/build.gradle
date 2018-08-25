@@ -15,7 +15,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
 //        Auth0
-        manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "https"]
+        manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "dataowlmobile"]
     }
     buildTypes {
         release {
@@ -30,10 +30,6 @@ dependencies {
 
 //    Gson
     implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
-
-//    Auth0
-//    https://mvnrepository.com/artifact/com.auth0/java-jwt
-    compile group: 'com.auth0', name: 'java-jwt', version: '3.4.0'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"

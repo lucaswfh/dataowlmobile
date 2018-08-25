@@ -74,8 +74,11 @@ class MainActivity : AppCompatActivity() {
                     override fun onSuccess(credentials: com.auth0.android.result.Credentials) {
                         // Store credentials
                         // Navigate to your main activity
-                        val btn: Button = findViewById<Button>(R.id.button_sendImage)
-                        btn.isEnabled = true
+
+                        runOnUiThread {
+                            val btn: Button = findViewById<Button>(R.id.button_sendImage)
+                            btn.isEnabled = true
+                        }
                     }
 
                     override fun onFailure(dialog: Dialog) {
