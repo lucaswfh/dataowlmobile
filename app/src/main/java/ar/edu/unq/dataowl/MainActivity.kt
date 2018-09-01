@@ -11,9 +11,9 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
-import ar.edu.unq.dataowl.appmodel.MainActivityAppModel
 import ar.edu.unq.dataowl.model.HerbImage
 import ar.edu.unq.dataowl.services.HttpService
+import ar.edu.unq.dataowl.services.LoginService
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.provider.AuthCallback
@@ -25,13 +25,13 @@ import com.auth0.android.provider.WebAuthProvider
 
 class MainActivity : AppCompatActivity() {
 
-    val appModel: MainActivityAppModel = MainActivityAppModel()
-
     var bitmap: Bitmap? = null
 
     val CAMERA_REQUEST_CODE = 0
 
     var auth0: Auth0? = null
+
+    val loginService = LoginService()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,8 +41,6 @@ class MainActivity : AppCompatActivity() {
 
         auth0 = Auth0(this);
         auth0?.setOIDCConformant(true);
-
-        login()
     }
 
 //    take photo activity result
@@ -66,29 +64,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun login() {
-        val that: MainActivity = this
-        WebAuthProvider.init(auth0 as Auth0)
-                .withScheme("DataOwlMobile")
-                .withAudience(String.format("https://%s/userinfo", getString(R.string.com_auth0_domain)))
-                .start(this@MainActivity, object : AuthCallback {
-                    override fun onSuccess(credentials: com.auth0.android.result.Credentials) {
-                        // Store credentials
-                        // Navigate to your main activity
-
-                        runOnUiThread {
-                            val btn: Button = findViewById<Button>(R.id.button_sendImage)
-                            btn.isEnabled = true
-                        }
-                    }
-
-                    override fun onFailure(dialog: Dialog) {
-                        // Show error Dialog to user
-                    }
-
-                    override fun onFailure(exception: AuthenticationException) {
-                        // Show error to user
-                    }
-                })
+        loginService.login(auth0 as Auth0, this,
+        {
+            runOnUiThread {
+                val btn: Button = findViewById<Button>(R.id.button_sendImage)
+                btn.isEnabled = true
+            }
+        })
     }
 
 //    sets on click button listeners
@@ -105,23 +87,35 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.button_sendImage).setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View) {
-                val service: HttpService = HttpService()
-                val image: HerbImage = HerbImage.Builder()
-                        .withBitmap(bitmap as Bitmap)
-                        .build()
-
-                service.service.postImage(image).enqueue(object: Callback<String> {
-                    override fun onFailure(call: Call<String>?, t: Throwable?) {
-
-                    }
-
-                    override fun onResponse(call: Call<String>?, response: Response<String>?) {
-
-                    }
-
-                })
+                if (loggedIn())
+                    sendImage()
+                else
+                    login()
             }
         })
+    }
+
+//    envia la imagen
+    private fun sendImage() {
+        val service: HttpService = HttpService()
+        val image: HerbImage = HerbImage.Builder()
+                .withBitmap(bitmap as Bitmap)
+                .build()
+
+        service.service.postImage(image).enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>?, t: Throwable?) {
+                // TODO: notificar al usuario (feedback sobre envio de imagen)
+            }
+
+            override fun onResponse(call: Call<String>?, response: Response<String>?) {
+                // TODO: notificar al usuario (feedback sobre envio de imagen)
+            }
+        })
+    }
+
+    //    dice si el usuario esta logeado
+    private fun loggedIn(): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }
