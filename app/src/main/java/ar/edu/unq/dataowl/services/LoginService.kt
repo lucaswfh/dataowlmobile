@@ -62,7 +62,7 @@ class LoginService (val auth0: Auth0, val activity: AppCompatActivity) {
         WebAuthProvider.init(auth0)
                 .withScheme("DataOwlMobile")
                 .withAudience(String.format("https://%s/userinfo", activity.getString(R.string.com_auth0_domain)))
-                .withScope("openid offline_access")
+                .withScope("openid offline_access profile email read:current_user update:current_user_metadata")
                 .start(activity, object : AuthCallback {
                     override fun onSuccess(credentials: com.auth0.android.result.Credentials) {
 //                        store credentials
