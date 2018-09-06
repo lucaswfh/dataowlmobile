@@ -22,16 +22,16 @@ import retrofit2.Callback
 import retrofit2.Response
 import com.auth0.android.provider.WebAuthProvider
 
-
 class MainActivity : AppCompatActivity() {
 
+//    camera and photo
     var bitmap: Bitmap? = null
-
     val CAMERA_REQUEST_CODE = 0
 
+//    login
     var auth0: Auth0? = null
-
-    val loginService = LoginService()
+    var loginService: LoginService? = null
+    var loggedIn: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +41,8 @@ class MainActivity : AppCompatActivity() {
 
         auth0 = Auth0(this);
         auth0?.setOIDCConformant(true);
+
+        loginService = LoginService(auth0 as Auth0, this)
     }
 
 //    take photo activity result
@@ -50,8 +52,10 @@ class MainActivity : AppCompatActivity() {
         when(requestCode) {
             CAMERA_REQUEST_CODE -> {
                 if (resultCode == Activity.RESULT_OK && data !=null) {
-                    val btn: Button = findViewById<Button>(R.id.button_sendImage)
-                    btn.isEnabled = true
+                    runOnUiThread {
+                        val btn: Button = findViewById<Button>(R.id.    button_sendImage)
+                        btn.isEnabled = true
+                    }
 
                     bitmap = data.extras.get("data") as Bitmap
                     findViewById<ImageView>(R.id.imageView_photo).setImageBitmap(bitmap)
@@ -61,16 +65,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this,"Unrecognized request code", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    private fun login() {
-        loginService.login(auth0 as Auth0, this,
-        {
-            runOnUiThread {
-                val btn: Button = findViewById<Button>(R.id.button_sendImage)
-                btn.isEnabled = true
-            }
-        })
     }
 
 //    sets on click button listeners
@@ -90,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                 if (loggedIn())
                     sendImage()
                 else
-                    login()
+                    loginService?.login()
             }
         })
     }
@@ -98,11 +92,11 @@ class MainActivity : AppCompatActivity() {
 //    envia la imagen
     private fun sendImage() {
         val service: HttpService = HttpService()
-        val image: HerbImage = HerbImage.Builder()
+        val herbImage: HerbImage = HerbImage.Builder()
                 .withBitmap(bitmap as Bitmap)
                 .build()
 
-        service.service.postImage(image).enqueue(object : Callback<String> {
+        service.service.postImage(herbImage).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>?, t: Throwable?) {
                 // TODO: notificar al usuario (feedback sobre envio de imagen)
             }
@@ -114,8 +108,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     //    dice si el usuario esta logeado
-    private fun loggedIn(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    private fun loggedIn(): Boolean = loggedIn
 
 }
