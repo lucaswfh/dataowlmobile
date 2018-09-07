@@ -1,7 +1,6 @@
 package ar.edu.unq.dataowl
 
 import android.app.Activity
-import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.support.v7.app.AppCompatActivity
@@ -13,14 +12,9 @@ import android.widget.ImageView
 import android.widget.Toast
 import ar.edu.unq.dataowl.model.HerbImage
 import ar.edu.unq.dataowl.services.HttpService
-import ar.edu.unq.dataowl.services.LoginService
-import com.auth0.android.Auth0
-import com.auth0.android.authentication.AuthenticationException
-import com.auth0.android.provider.AuthCallback
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import com.auth0.android.provider.WebAuthProvider
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,21 +22,11 @@ class MainActivity : AppCompatActivity() {
     var bitmap: Bitmap? = null
     val CAMERA_REQUEST_CODE = 0
 
-//    login
-    var auth0: Auth0? = null
-    var loginService: LoginService? = null
-    var loggedIn: Boolean = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         setOnButtonClickListeners()
-
-        auth0 = Auth0(this);
-        auth0?.setOIDCConformant(true);
-
-        loginService = LoginService(auth0 as Auth0, this)
     }
 
 //    take photo activity result
@@ -84,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                 if (loggedIn())
                     sendImage()
                 else
-                    loginService?.login()
+                    login()
             }
         })
     }
@@ -107,7 +91,12 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun login() {
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+    }
+
     //    dice si el usuario esta logeado
-    private fun loggedIn(): Boolean = loggedIn
+    private fun loggedIn(): Boolean = false
 
 }

@@ -2,6 +2,13 @@
 
     <string name="app_name">DataOwl</string>
 
+    <!--LoginActivity-->
+    <string name="refresh">Refresh the access_token</string>
+    <string name="login">Log in</string>
+    <string name="logout">Logout</string>
+    <string name="request_credentials_title">Authenticate to continue</string>
+    <!--/LoginActivity-->
+
     <!--Auth0-->
     <string name="com_auth0_client_id">CafBjN7V8lCpHVzsl4IW2rvD9Pp66zWk</string>
     <string name="com_auth0_domain">killscript.auth0.com</string>
