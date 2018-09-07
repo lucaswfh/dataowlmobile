@@ -140,15 +140,26 @@ class MainActivity : AppCompatActivity() {
 
         sendImageButton.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View) {
-                if (loggedIn())
-                    sendImage()
+                if (loggedIn()) {
+                    if (hasImagesToSend())
+                        sendImage()
+                    else
+                        Toast.makeText(
+                                this@MainActivity,
+                                "No images to send!",
+                                Toast.LENGTH_SHORT
+                        ).show()
+                }
                 else {
-                    // TODO: verificar conexion a internet
+                    // TODO: verificar conexion a internet e informar al usuario si no se pouede logear
                     login()
                 }
             }
         })
     }
+
+    // Says if there are images pending to be sent to backend
+    private fun hasImagesToSend(): Boolean = bitmap != null
 
     private fun configureLoginLogoutButton() {
         val loginLogoutButton = findViewById<Button>(R.id.button_loginLogoutButton)
@@ -168,9 +179,9 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    //    envia la imagen
+    //    envia la imagen y notifica al usuario
     private fun sendImage() {
-        val service: HttpService = HttpService()
+        val service = HttpService()
         val herbImage: HerbImage = HerbImage.Builder()
                 .withBitmap(bitmap as Bitmap)
                 .withUserAccessToken(AUTH0_ACCESS_TOKEN)
@@ -178,11 +189,23 @@ class MainActivity : AppCompatActivity() {
 
         service.service.postImage(herbImage).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>?, t: Throwable?) {
-                // TODO: notificar al usuario (feedback sobre envio de imagen)
+                Toast.makeText(
+                        this@MainActivity,
+                        "Image not sent!",
+                        Toast.LENGTH_SHORT
+                ).show()
+
+                // TODO: handlear el error
             }
 
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
-                // TODO: notificar al usuario (feedback sobre envio de imagen)
+                Toast.makeText(
+                        this@MainActivity,
+                        "Image sent correctly!",
+                        Toast.LENGTH_SHORT
+                ).show()
+
+                // TODO: hacer algo con la respuesta?
             }
         })
     }

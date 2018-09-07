@@ -52,9 +52,11 @@ class LoginActivity : AppCompatActivity() {
 
         credentialsManager?.clearCredentials();
 
-        // Check if the activity was launched after a logout
+        // Check if the activity was launched after a logout, clears credentials and moves
+        // to next activity
         if (getIntent().getBooleanExtra(KEY_CLEAR_CREDENTIALS, false)) {
             credentialsManager?.clearCredentials();
+            showNextActivity()
         }
 
         // Check if a log in button must be shown, if not, gets the current credentials
@@ -94,6 +96,14 @@ class LoginActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    // Shows next activity without credentials (to use if just logged out)
+    private fun showNextActivity() {
+        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    // Shows next activity with credentials (to use if just logged in)
     private fun showNextActivity(credentials: Credentials) {
         val intent = Intent(this@LoginActivity, MainActivity::class.java)
         intent.putExtra(EXTRA_ACCESS_TOKEN, credentials.accessToken)
