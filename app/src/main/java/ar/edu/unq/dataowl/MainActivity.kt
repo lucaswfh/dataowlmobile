@@ -6,24 +6,18 @@ import android.graphics.Bitmap
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
-import ar.edu.unq.dataowl.model.HerbImage
+import ar.edu.unq.dataowl.model.Herb
+import ar.edu.unq.dataowl.model.HerbUpload
 import ar.edu.unq.dataowl.services.HttpService
-import com.auth0.android.Auth0
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import com.auth0.android.authentication.AuthenticationAPIClient
-import com.auth0.android.authentication.AuthenticationException
-import com.auth0.android.management.UsersAPIClient
-import com.auth0.android.management.ManagementException
-import com.auth0.android.result.UserProfile
-import com.auth0.android.callback.BaseCallback
-import com.auth0.android.provider.WebAuthProvider
+import java.io.ByteArrayOutputStream
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,12 +29,6 @@ class MainActivity : AppCompatActivity() {
     var AUTH0_ACCESS_TOKEN: String = ""
     var AUTH0_ID_TOKEN:     String = ""
 
-    // Auth0 api clients, null if not logged in
-    var usersClient: UsersAPIClient? = null
-    var authenticationAPIClient: AuthenticationAPIClient? = null
-
-//    private var auth0: Auth0? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -50,49 +38,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun initializeAuth0() {
-        // Initialize Auth0
-//        auth0 = Auth0(this)
-//        auth0?.setOIDCConformant(true);
-
         // Get Auth0 Tokens
         val token = intent.getStringExtra(LoginActivity.EXTRA_ACCESS_TOKEN)
         val idtkn = intent.getStringExtra(LoginActivity.EXTRA_ID_TOKEN)
         if (token != null) {
             AUTH0_ACCESS_TOKEN = token
             AUTH0_ID_TOKEN = idtkn
-
-//            // if im here its because im logged in, so initialize clients api
-//            usersClient = UsersAPIClient(auth0, AUTH0_ACCESS_TOKEN)
-//            authenticationAPIClient = AuthenticationAPIClient(auth0 as Auth0)
-//
-//            getUsetProfile()
         }
     }
-
-//    fun getUsetProfile() {
-//        val client = authenticationAPIClient as AuthenticationAPIClient
-//        client.userInfo(AUTH0_ACCESS_TOKEN)
-//                .start(object : BaseCallback<UserProfile, AuthenticationException> {
-//                    override fun onSuccess(userinfo: UserProfile) {
-//                        val cli = usersClient as UsersAPIClient
-//                        cli.getProfile(userinfo.id)
-//                                .start(object : BaseCallback<UserProfile, ManagementException> {
-//                                    override fun onSuccess(profile: UserProfile) {
-//                                        // Display the user profile
-//                                        findViewById<TextView>(R.id.textViewUserinfo).setText(profile.givenName)
-//                                    }
-//
-//                                    override fun onFailure(error: ManagementException) {
-//                                        // Show error
-//                                    }
-//                                })
-//                    }
-//
-//                    override fun onFailure(error: AuthenticationException) {
-//                        // Show error
-//                    }
-//                })
-//    }
 
 //    take photo activity result
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -183,13 +136,23 @@ class MainActivity : AppCompatActivity() {
 
     //    envia la imagen y notifica al usuario
     private fun sendImage() {
+        // http service
         val service = HttpService()
-        val herbImage: HerbImage = HerbImage.Builder()
-                .withBitmap(bitmap as Bitmap)
-                .withUserAccessToken(AUTH0_ACCESS_TOKEN)
-                .build()
 
-        service.service.postImage(herbImage).enqueue(object : Callback<String> {
+        // convert bitmap into base 64 string
+        val stream = ByteArrayOutputStream()
+        bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        val image = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
+
+        // create upload object
+        val herbImageUpload = HerbUpload(
+                Herb(image),
+                AUTH0_ACCESS_TOKEN,
+                AUTH0_ID_TOKEN
+        )
+
+        // send
+        service.service.postImage(herbImageUpload).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>?, t: Throwable?) {
                 Toast.makeText(
                         this@MainActivity,

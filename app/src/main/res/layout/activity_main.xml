@@ -8,12 +8,6 @@
     android:orientation="vertical"
     tools:context="ar.edu.unq.dataowl.MainActivity">
 
-    <TextView
-        android:id="@+id/textViewUserinfo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Not logged in!"/>
-
     <ImageView
         android:id="@+id/imageView_photo"
         android:layout_width="match_parent"
