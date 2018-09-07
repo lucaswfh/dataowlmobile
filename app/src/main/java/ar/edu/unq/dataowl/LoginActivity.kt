@@ -17,12 +17,18 @@ import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.provider.AuthCallback
 import com.auth0.android.provider.WebAuthProvider
 import android.widget.Toast
+import com.auth0.android.management.ManagementException
+import com.auth0.android.management.UsersAPIClient
+import com.auth0.android.result.UserProfile
 
 
 class LoginActivity : AppCompatActivity() {
 
     private var auth0: Auth0? = null
     private var credentialsManager: SecureCredentialsManager? = null
+
+    var usersClient: UsersAPIClient? = null
+    var authenticationAPIClient: AuthenticationAPIClient? = null
 
     /**
      * Required when setting up Local Authentication in the Credential Manager
@@ -52,14 +58,41 @@ class LoginActivity : AppCompatActivity() {
 
         credentialsManager?.clearCredentials();
 
-        // Check if the activity was launched after a logout, clears credentials and moves
-        // to next activity
-        if (getIntent().getBooleanExtra(KEY_CLEAR_CREDENTIALS, false)) {
-            credentialsManager?.clearCredentials();
-            showNextActivity()
-        }
+        checkIfLogginOutAndClearCredentials()
 
-        // Check if a log in button must be shown, if not, gets the current credentials
+        manageLogin()
+
+        getUserProfile()
+    }
+
+    // If logged in, gets user profile
+    fun getUserProfile() {
+        val token = EXTRA_ACCESS_TOKEN
+        val client = authenticationAPIClient as AuthenticationAPIClient
+        client.userInfo(EXTRA_ACCESS_TOKEN)
+                .start(object : BaseCallback<UserProfile, AuthenticationException> {
+                    override fun onSuccess(userinfo: UserProfile) {
+                        val cli = usersClient as UsersAPIClient
+                        cli.getProfile(userinfo.id)
+                                .start(object : BaseCallback<UserProfile, ManagementException> {
+                                    override fun onSuccess(profile: UserProfile) {
+                                        // Display the user profile
+                                    }
+
+                                    override fun onFailure(error: ManagementException) {
+                                        // Show error
+                                    }
+                                })
+                    }
+
+                    override fun onFailure(error: AuthenticationException) {
+                        // Show error
+                    }
+                })
+    }
+
+    // Check if a log in button must be shown, if not, gets the current credentials
+    fun manageLogin() {
         val manager = credentialsManager as SecureCredentialsManager // needed to use if
         if (!manager.hasValidCredentials()) {
             setContentView(R.layout.activity_login)
@@ -81,6 +114,16 @@ class LoginActivity : AppCompatActivity() {
                     finish()
                 }
             })
+        }
+    }
+
+    // Check if the activity was launched after a logout, clears credentials and moves
+    // to next activity
+    fun checkIfLogginOutAndClearCredentials() {
+
+        if (getIntent().getBooleanExtra(KEY_CLEAR_CREDENTIALS, false)) {
+            credentialsManager?.clearCredentials();
+            showNextActivity()
         }
     }
 
