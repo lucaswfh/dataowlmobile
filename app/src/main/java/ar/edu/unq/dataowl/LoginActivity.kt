@@ -28,10 +28,12 @@ class LoginActivity : AppCompatActivity() {
      * Required when setting up Local Authentication in the Credential Manager
      * Refer to SecureCredentialsManager#requireAuthentication method for more information.
      */
-    private val CODE_DEVICE_AUTHENTICATION = 22
-    private val KEY_CLEAR_CREDENTIALS = "com.auth0.CLEAR_CREDENTIALS"
-    private val EXTRA_ACCESS_TOKEN = "com.auth0.ACCESS_TOKEN"
-    private val EXTRA_ID_TOKEN = "com.auth0.ID_TOKEN"
+    companion object {
+        private val CODE_DEVICE_AUTHENTICATION = 22
+        val KEY_CLEAR_CREDENTIALS = "com.auth0.CLEAR_CREDENTIALS"
+        val EXTRA_ACCESS_TOKEN = "com.auth0.ACCESS_TOKEN"
+        val EXTRA_ID_TOKEN = "com.auth0.ID_TOKEN"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

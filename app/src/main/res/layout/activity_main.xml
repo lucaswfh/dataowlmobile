@@ -21,12 +21,25 @@
         android:text="Open Camera"
         android:layout_weight="1"/>
 
-    <Button
-        android:id="@+id/button_sendImage"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Send Image"
-        android:layout_weight="1"
-        android:enabled="false"/>
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/button_loginLogoutButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/button_sendImage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Send Image"
+            android:layout_weight="1"
+            android:enabled="false"/>
+
+    </LinearLayout>
 
 </LinearLayout>
