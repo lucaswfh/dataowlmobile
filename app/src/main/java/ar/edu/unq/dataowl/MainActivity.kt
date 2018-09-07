@@ -43,8 +43,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        configureButtons()
         initializeAuth0()
+        configureButtons()
     }
 
     fun initializeAuth0() {
@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
 //    sets on click button listeners
     fun configureButtons() {
         configureOpenCameraButton()
-        confureSendImageButton()
+        confireSendImageButton()
         configureLoginLogoutButton()
     }
 
@@ -133,8 +133,12 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun confureSendImageButton() {
-        findViewById<Button>(R.id.button_sendImage).setOnClickListener(object : View.OnClickListener {
+    private fun confireSendImageButton() {
+        val sendImageButton = findViewById<Button>(R.id.button_sendImage)
+
+        sendImageButton.setEnabled(loggedIn())
+
+        sendImageButton.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View) {
                 if (loggedIn())
                     sendImage()
