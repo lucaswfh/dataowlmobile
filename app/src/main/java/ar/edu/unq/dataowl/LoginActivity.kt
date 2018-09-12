@@ -43,6 +43,7 @@ class LoginActivity : AppCompatActivity() {
         val KEY_CLEAR_CREDENTIALS = "com.auth0.CLEAR_CREDENTIALS"
         val EXTRA_ACCESS_TOKEN = "com.auth0.ACCESS_TOKEN"
         val EXTRA_ID_TOKEN = "com.auth0.ID_TOKEN"
+        val API_IDENTIFIER = "https://pure-wildwood-74137.herokuapp.com/"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -183,7 +184,8 @@ class LoginActivity : AppCompatActivity() {
     private fun doLogin() {
         WebAuthProvider.init(auth0 as Auth0)
                 .withScheme("DataOwlMobile")
-                .withAudience(String.format("https://%s/api/v2/", getString(R.string.com_auth0_domain)))
+//                .withAudience(String.format("https://%s/api/v2/", getString(R.string.com_auth0_domain)))
+                .withAudience(API_IDENTIFIER)
                 .withScope("openid offline_access profile email read:current_user update:current_user_metadata")
                 .start(this, webCallback());
 
