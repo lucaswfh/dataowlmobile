@@ -3,8 +3,10 @@ package ar.edu.unq.dataowl
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Base64
 import android.view.View
@@ -19,14 +21,25 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import com.auth0.android.result.UserProfile
-import com.mashape.unirest.http.Unirest
+import android.os.Environment.DIRECTORY_PICTURES
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
+import android.support.v4.content.FileProvider
+
+
 
 
 class MainActivity : AppCompatActivity() {
 
 //    camera and photo
     var bitmap: Bitmap? = null
+    var photoFile: File? = null;
     val CAMERA_REQUEST_CODE = 0
+    val REQUEST_IMAGE_CAPTURE = 1
+    val REQUEST_TAKE_PHOTO = 1
+    var mCurrentPhotoPath: String? = null
 
     // Auth0 access and id tokens ("" if not logged in)
     var AUTH0_ACCESS_TOKEN: String = ""
@@ -132,19 +145,36 @@ class MainActivity : AppCompatActivity() {
 //        })
 //    }
 
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageFileName = "JPEG_" + timeStamp + "_"
+        val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val image = File.createTempFile(
+                imageFileName, /* prefix */
+                ".jpg", /* suffix */
+                storageDir      /* directory */
+        )
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath()
+        return image
+    }
+
 //    take photo activity result
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         when(requestCode) {
-            CAMERA_REQUEST_CODE -> {
-                if (resultCode == Activity.RESULT_OK && data !=null) {
+            REQUEST_IMAGE_CAPTURE -> {
+                if (resultCode == Activity.RESULT_OK) {
                     runOnUiThread {
                         val btn: Button = findViewById<Button>(R.id.    button_sendImage)
                         btn.isEnabled = true
                     }
 
-                    bitmap = data.extras.get("data") as Bitmap
+                    bitmap = data?.extras?.get("data") as Bitmap
                     findViewById<ImageView>(R.id.imageView_photo).setImageBitmap(bitmap)
                 }
             }
@@ -167,7 +197,20 @@ class MainActivity : AppCompatActivity() {
                 val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
                 if (takePictureIntent.resolveActivity(packageManager) != null) {
-                    startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE)
+                    //startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE)
+
+                    try {
+                        photoFile = createImageFile();
+                    } catch (ex: IOException) {
+
+                    }
+                    if (photoFile != null) {
+                        val photoURI = FileProvider.getUriForFile(this@MainActivity,
+                                "com.example.android.fileprovider",
+                                photoFile)
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                        startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+                    }
                 }
             }
         })
@@ -226,7 +269,8 @@ class MainActivity : AppCompatActivity() {
 
         // convert bitmap into base 64 string
         val stream = ByteArrayOutputStream()
-        bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        val bm: Bitmap = BitmapFactory.decodeFile(photoFile?.absolutePath);
+        bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
         val image = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
 
         // create upload object
