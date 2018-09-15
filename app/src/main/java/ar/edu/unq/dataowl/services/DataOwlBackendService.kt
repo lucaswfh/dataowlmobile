@@ -12,7 +12,7 @@ import retrofit2.http.POST
  */
 interface DataOwlBackendService {
 
-    @POST("/uploadimage")
+    @POST("/private/uploadimage")
     fun postImage(@Body herbUpload: HerbUpload): Call<String>
 
     // accessTypeToke e.g. "Bearer ACCESS_TOKEN_FROM_AUTH0"
