@@ -18,6 +18,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
+import com.auth0.android.result.UserProfile
+import com.mashape.unirest.http.Unirest
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,6 +31,9 @@ class MainActivity : AppCompatActivity() {
     // Auth0 access and id tokens ("" if not logged in)
     var AUTH0_ACCESS_TOKEN: String = ""
     var AUTH0_ID_TOKEN:     String = ""
+
+    // User profile (null if not logged in)
+    var profile: UserProfile? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +51,86 @@ class MainActivity : AppCompatActivity() {
             AUTH0_ACCESS_TOKEN = token
             AUTH0_ID_TOKEN = idtkn
         }
+
+        // If logged in, notify backend
+        if (loggedIn())
+//            getUserProfileAndNotifyBackend()
+            sendTokensToBackend()
     }
+
+    // Sends tokens to backend to notify login
+    // asumes AUTH0_ACCESS_TOKEN has a valide acces token
+    fun sendTokensToBackend() {
+        val httpService = HttpService()
+
+        httpService.service.userLogIn("Bearer " + AUTH0_ACCESS_TOKEN)
+                .enqueue(object: Callback<String> {
+
+                    override fun onResponse(call: Call<String>?, response: Response<String>?) {
+                        //TODO: To change body of created functions use File | Settings | File Templates.
+                    }
+
+                    override fun onFailure(call: Call<String>?, t: Throwable?) {
+                        //TODO: To change body of created functions use File | Settings | File Templates.
+                    }
+
+                })
+    }
+
+    // Gets user profile and sends his info to backend
+//    fun getUserProfileAndNotifyBackend() {
+//        val auth0 = Auth0(this)
+//        auth0.setOIDCConformant(true);
+//
+//        val usersClient = UsersAPIClient(auth0, AUTH0_ACCESS_TOKEN)
+//        val authenticationAPIClient = AuthenticationAPIClient(auth0)
+//        val that = this
+//
+//        authenticationAPIClient.userInfo(AUTH0_ACCESS_TOKEN)
+//                .start(object : BaseCallback<UserProfile, AuthenticationException> {
+//                    override fun onSuccess(userinfo: UserProfile) {
+//                        usersClient.getProfile(userinfo.id)
+//                                .start(object : BaseCallback<UserProfile, ManagementException> {
+//                                    override fun onSuccess(profile: UserProfile) {
+//                                        // Set MainActivity.profile and send its data to backend
+//                                        that.profile = profile
+//                                        sendProfileToBackend(profile)
+//                                    }
+//
+//                                    override fun onFailure(error: ManagementException) {
+//                                        // Show error
+//                                        val a = ""
+//                                    }
+//                                })
+//                    }
+//
+//                    override fun onFailure(error: AuthenticationException) {
+//                        // Show error
+//                        val a = ""
+//                    }
+//                })
+//    }
+
+    // Sends profile to backend
+//    fun sendProfileToBackend(profile: UserProfile) {
+//        val httpService = HttpService()
+//
+//        httpService.service.userLogIn(
+//                "Bearer " + AUTH0_ACCESS_TOKEN,
+//                profile
+//        ).enqueue(object: Callback<String> {
+//
+//            override fun onResponse(call: Call<String>?, response: Response<String>?) {
+//                // TODO: handle response
+//                val a = ""
+//            }
+//
+//            override fun onFailure(call: Call<String>?, t: Throwable?) {
+//                // TODO: handle response
+//                val a = ""
+//            }
+//        })
+//    }
 
 //    take photo activity result
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

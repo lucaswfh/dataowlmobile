@@ -17,13 +17,7 @@ import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.provider.AuthCallback
 import com.auth0.android.provider.WebAuthProvider
 import android.widget.Toast
-import ar.edu.unq.dataowl.services.HttpService
-import com.auth0.android.management.ManagementException
 import com.auth0.android.management.UsersAPIClient
-import com.auth0.android.result.UserProfile
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class LoginActivity : AppCompatActivity() {
@@ -66,53 +60,6 @@ class LoginActivity : AppCompatActivity() {
         checkIfLogginOutAndClearCredentials()
 
         manageLogin()
-    }
-
-    // If logged in, gets user profile
-    fun getUserProfile(credentials: Credentials) {
-        val access_token = credentials.accessToken;
-
-        usersClient = UsersAPIClient(auth0, access_token)
-        authenticationAPIClient = AuthenticationAPIClient(auth0 as Auth0)
-
-        val client = authenticationAPIClient as AuthenticationAPIClient
-        client.userInfo(access_token as String)
-                .start(object : BaseCallback<UserProfile, AuthenticationException> {
-                    override fun onSuccess(userinfo: UserProfile) {
-                        val cli = usersClient as UsersAPIClient
-                        cli.getProfile(userinfo.id)
-                                .start(object : BaseCallback<UserProfile, ManagementException> {
-                                    override fun onSuccess(profile: UserProfile) {
-                                        notifyBackend(profile)
-
-                                        // TODO: show givenName in the app action bar
-                                    }
-
-                                    override fun onFailure(error: ManagementException) {
-                                        // Show error
-                                    }
-                                })
-                    }
-
-                    override fun onFailure(error: AuthenticationException) {
-                        // Show error
-                    }
-                })
-    }
-
-    // Notifies the backend of a log in
-    private fun notifyBackend(profile: UserProfile) {
-        val service = HttpService()
-
-        service.service.userLogIn(profile).enqueue(object: Callback<String> {
-            override fun onFailure(call: Call<String>?, t: Throwable?) {
-                // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onResponse(call: Call<String>?, response: Response<String>?) {
-                // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        })
     }
 
     // Check if a log in button must be shown, if not, gets the current credentials
@@ -173,7 +120,6 @@ class LoginActivity : AppCompatActivity() {
     // Shows next activity with credentials (to use if just logged in)
     // Gets user profile
     private fun showNextActivity(credentials: Credentials) {
-        getUserProfile(credentials)
         val intent = Intent(this@LoginActivity, MainActivity::class.java)
         intent.putExtra(EXTRA_ACCESS_TOKEN, credentials.accessToken)
         intent.putExtra(EXTRA_ID_TOKEN, credentials.idToken)
@@ -185,7 +131,8 @@ class LoginActivity : AppCompatActivity() {
         WebAuthProvider.init(auth0 as Auth0)
                 .withScheme("DataOwlMobile")
 //                .withAudience(String.format("https://%s/api/v2/", getString(R.string.com_auth0_domain)))
-                .withAudience(API_IDENTIFIER)
+//                .withAudience(API_IDENTIFIER)
+                .withAudience("https://pure-wildwood-74137.herokuapp.com/")
                 .withScope("openid offline_access profile email read:current_user update:current_user_metadata")
                 .start(this, webCallback());
 
