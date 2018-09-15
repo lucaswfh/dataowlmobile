@@ -281,7 +281,9 @@ class MainActivity : AppCompatActivity() {
         )
 
         // send
-        service.service.postImage(herbImageUpload).enqueue(object : Callback<String> {
+        service.service.postImage(
+                "Bearer " + AUTH0_ACCESS_TOKEN, herbImageUpload
+        ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>?, t: Throwable?) {
                 Toast.makeText(
                         this@MainActivity,
