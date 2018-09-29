@@ -13,15 +13,13 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
-import ar.edu.unq.dataowl.model.Herb
-import ar.edu.unq.dataowl.model.HerbUpload
+import ar.edu.unq.dataowl.model.PostPackage
 import ar.edu.unq.dataowl.services.HttpService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import com.auth0.android.result.UserProfile
-import android.os.Environment.DIRECTORY_PICTURES
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -274,15 +272,16 @@ class MainActivity : AppCompatActivity() {
         val image = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
 
         // create upload object
-        val herbImageUpload = HerbUpload(
-                Herb(image),
-                AUTH0_ACCESS_TOKEN,
-                AUTH0_ID_TOKEN
+        val images : List<String> = listOf<String>(image)
+        val postPackageUpload = PostPackage(
+                images,
+                "0",
+                "0"
         )
 
         // send
         service.service.postImage(
-                "Bearer " + AUTH0_ACCESS_TOKEN, herbImageUpload
+                "Bearer " + AUTH0_ACCESS_TOKEN, postPackageUpload
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>?, t: Throwable?) {
                 Toast.makeText(
