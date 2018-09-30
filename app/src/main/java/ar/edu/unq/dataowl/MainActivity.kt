@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     val file = File(mCurrentPhotoPath)
-                    val bitmap: Bitmap? = MediaStore.Images.Media
+                    bitmap = MediaStore.Images.Media
                             .getBitmap(this@MainActivity.getContentResolver(), Uri.fromFile(file))
 
                     if (bitmap != null)
@@ -219,8 +219,7 @@ class MainActivity : AppCompatActivity() {
 
         // convert bitmap into base 64 string
         val stream = ByteArrayOutputStream()
-        val bm: Bitmap = BitmapFactory.decodeFile(photoFile?.absolutePath);
-        bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream);
         val image = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
 
         // create upload object
