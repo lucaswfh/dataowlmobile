@@ -12,8 +12,8 @@ import retrofit2.http.POST
 interface DataOwlBackendService {
     // accessToken e.g. "Bearer ACCESS_TOKEN_FROM_AUTH0"
 
-    @POST
-    fun postImage(@Header("authorization") accessTypeToken: String, @Body postPackage: PostPackage): Call<String>
+    @POST("/private/uploadpackage")
+    fun postImage(@Header("authorization") accessToken: String, @Body postPackage: PostPackage): Call<String>
 
     @POST("/private/userlogin")
     fun userLogIn(@Header("authorization") accessToken: String): Call<String>
