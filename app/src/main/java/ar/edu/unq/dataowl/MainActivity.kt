@@ -1,14 +1,22 @@
 package ar.edu.unq.dataowl
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.net.Uri
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.Settings
+import android.provider.Settings.*
 import android.util.Base64
 import android.view.View
 import android.widget.Button
@@ -26,8 +34,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import android.support.v4.content.FileProvider
-
-
+import java.util.jar.Manifest
 
 
 class MainActivity : AppCompatActivity() {
@@ -47,12 +54,49 @@ class MainActivity : AppCompatActivity() {
     // User profile (null if not logged in)
     var profile: UserProfile? = null
 
+    //GPS
+    var locationManager: LocationManager? = null
+    var locationListener: LocationListener? = null
+    var location: Location? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         initializeAuth0()
         configureButtons()
+
+        this.locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        this.locationListener = object : LocationListener{
+            override fun onLocationChanged(lc: Location) {
+                // Called when a new location is found by the network location provider.
+                location = lc
+            }
+
+            override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
+            }
+
+            override fun onProviderEnabled(provider: String) {
+            }
+
+            override fun onProviderDisabled(provider: String) {
+                val intent: Intent = Intent(ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+            }
+
+        }
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                requestPermissions(arrayOf<String>(
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION
+                ), 10)
+                return
+            }
+        }
+
+        locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000 , 0f, locationListener)
     }
 
     fun initializeAuth0() {
@@ -226,8 +270,8 @@ class MainActivity : AppCompatActivity() {
         val images : List<String> = listOf<String>(image)
         val postPackageUpload = PostPackage(
                 images,
-                "0",
-                "0"
+                location?.latitude.toString(),
+                location?.longitude.toString()
         )
 
         // send
