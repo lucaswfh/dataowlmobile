@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
@@ -13,15 +14,13 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
-import ar.edu.unq.dataowl.model.Herb
-import ar.edu.unq.dataowl.model.HerbUpload
+import ar.edu.unq.dataowl.model.PostPackage
 import ar.edu.unq.dataowl.services.HttpService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import com.auth0.android.result.UserProfile
-import android.os.Environment.DIRECTORY_PICTURES
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -90,76 +89,19 @@ class MainActivity : AppCompatActivity() {
                 })
     }
 
-    // Gets user profile and sends his info to backend
-//    fun getUserProfileAndNotifyBackend() {
-//        val auth0 = Auth0(this)
-//        auth0.setOIDCConformant(true);
-//
-//        val usersClient = UsersAPIClient(auth0, AUTH0_ACCESS_TOKEN)
-//        val authenticationAPIClient = AuthenticationAPIClient(auth0)
-//        val that = this
-//
-//        authenticationAPIClient.userInfo(AUTH0_ACCESS_TOKEN)
-//                .start(object : BaseCallback<UserProfile, AuthenticationException> {
-//                    override fun onSuccess(userinfo: UserProfile) {
-//                        usersClient.getProfile(userinfo.id)
-//                                .start(object : BaseCallback<UserProfile, ManagementException> {
-//                                    override fun onSuccess(profile: UserProfile) {
-//                                        // Set MainActivity.profile and send its data to backend
-//                                        that.profile = profile
-//                                        sendProfileToBackend(profile)
-//                                    }
-//
-//                                    override fun onFailure(error: ManagementException) {
-//                                        // Show error
-//                                        val a = ""
-//                                    }
-//                                })
-//                    }
-//
-//                    override fun onFailure(error: AuthenticationException) {
-//                        // Show error
-//                        val a = ""
-//                    }
-//                })
-//    }
-
-    // Sends profile to backend
-//    fun sendProfileToBackend(profile: UserProfile) {
-//        val httpService = HttpService()
-//
-//        httpService.service.userLogIn(
-//                "Bearer " + AUTH0_ACCESS_TOKEN,
-//                profile
-//        ).enqueue(object: Callback<String> {
-//
-//            override fun onResponse(call: Call<String>?, response: Response<String>?) {
-//                // TODO: handle response
-//                val a = ""
-//            }
-//
-//            override fun onFailure(call: Call<String>?, t: Throwable?) {
-//                // TODO: handle response
-//                val a = ""
-//            }
-//        })
-//    }
-
     @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val imageFileName = "JPEG_" + timeStamp + "_"
-        val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val image = File.createTempFile(
-                imageFileName, /* prefix */
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+                "JPEG_${timeStamp}_", /* prefix */
                 ".jpg", /* suffix */
-                storageDir      /* directory */
-        )
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath()
-        return image
+                storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            mCurrentPhotoPath = absolutePath
+        }
     }
 
 //    take photo activity result
@@ -168,15 +110,18 @@ class MainActivity : AppCompatActivity() {
 
         when(requestCode) {
             REQUEST_IMAGE_CAPTURE -> {
-                if (resultCode == Activity.RESULT_OK) {
+                if (resultCode == Activity.RESULT_OK && data !=null) {
                     runOnUiThread {
-                        val d = data
                         val btn: Button = findViewById<Button>(R.id.button_sendImage)
                         btn.isEnabled = true
                     }
 
-                    bitmap = data?.extras?.get("data") as Bitmap
-                    findViewById<ImageView>(R.id.imageView_photo).setImageBitmap(bitmap)
+                    val file = File(mCurrentPhotoPath)
+                    val bitmap: Bitmap? = MediaStore.Images.Media
+                            .getBitmap(this@MainActivity.getContentResolver(), Uri.fromFile(file))
+
+                    if (bitmap != null)
+                        findViewById<ImageView>(R.id.imageView_photo).setImageBitmap(bitmap)
                 }
             }
             else -> {
@@ -195,22 +140,26 @@ class MainActivity : AppCompatActivity() {
     private fun configureOpenCameraButton() {
         findViewById<Button>(R.id.button_openCamera).setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View) {
-                val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-                if (takePictureIntent.resolveActivity(packageManager) != null) {
-                    //startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE)
-
-                    try {
-                        photoFile = createImageFile();
-                    } catch (ex: IOException) {
-
-                    }
-                    if (photoFile != null) {
-                        val photoURI = FileProvider.getUriForFile(this@MainActivity,
-                                "com.example.android.fileprovider",
-                                photoFile)
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                        startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+                Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+                    // Ensure that there's a camera activity to handle the intent
+                    takePictureIntent.resolveActivity(packageManager)?.also {
+                        // Create the File where the photo should go
+                        val photoFile: File? = try {
+                            createImageFile()
+                        } catch (ex: IOException) {
+                            // Error occurred while creating the File
+                            null
+                        }
+                        // Continue only if the File was successfully created
+                        photoFile?.also {
+                            val photoURI: Uri = FileProvider.getUriForFile(
+                                    this@MainActivity,
+                                    "ar.edu.unq.dataowl.fileprovider",
+                                    it
+                            )
+                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                            startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+                        }
                     }
                 }
             }
@@ -275,15 +224,16 @@ class MainActivity : AppCompatActivity() {
         val image = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
 
         // create upload object
-        val herbImageUpload = HerbUpload(
-                Herb(image),
-                AUTH0_ACCESS_TOKEN,
-                AUTH0_ID_TOKEN
+        val images : List<String> = listOf<String>(image)
+        val postPackageUpload = PostPackage(
+                images,
+                "0",
+                "0"
         )
 
         // send
         service.service.postImage(
-                "Bearer " + AUTH0_ACCESS_TOKEN, herbImageUpload
+                "Bearer " + AUTH0_ACCESS_TOKEN, postPackageUpload
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>?, t: Throwable?) {
                 Toast.makeText(
