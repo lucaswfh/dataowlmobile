@@ -170,7 +170,8 @@ class MainActivity : AppCompatActivity() {
             REQUEST_IMAGE_CAPTURE -> {
                 if (resultCode == Activity.RESULT_OK) {
                     runOnUiThread {
-                        val btn: Button = findViewById<Button>(R.id.    button_sendImage)
+                        val d = data
+                        val btn: Button = findViewById<Button>(R.id.button_sendImage)
                         btn.isEnabled = true
                     }
 

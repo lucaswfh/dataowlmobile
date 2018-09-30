@@ -16,9 +16,9 @@ class HttpService {
             .create();
 
     private val retrofit: Retrofit = Retrofit.Builder()
-//            .baseUrl("http://10.0.2.2:3000")
+            .baseUrl("http://10.0.2.2:3000")
 //            .baseUrl("http://192.168.0.74:3000")
-            .baseUrl("https://pure-wildwood-74137.herokuapp.com/")
+//            .baseUrl("https://pure-wildwood-74137.herokuapp.com/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
