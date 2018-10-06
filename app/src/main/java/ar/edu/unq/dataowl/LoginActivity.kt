@@ -102,7 +102,7 @@ class LoginActivity : AppCompatActivity() {
      * Override required when setting up Local Authentication in the Credential Manager
      * Refer to SecureCredentialsManager#requireAuthentication method for more information.
      */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val manager = credentialsManager as SecureCredentialsManager // needed to use if
         if (manager.checkAuthenticationResult(requestCode, resultCode))
             return
