@@ -12,42 +12,41 @@
         android:id="@+id/imageView_photo"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="7"/>
+        android:layout_weight="7" />
 
-    <Spinner
-        android:id="@+id/plant_spinner"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
-    </Spinner>
-
-    <Button
-        android:id="@+id/button_openCamera"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Open Camera"
-        android:layout_weight="1"/>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
-
-        <Button
-            android:id="@+id/button_loginLogoutButton"
-            android:layout_width="0dp"
+        <Spinner
+            android:id="@+id/plant_spinner"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"/>
 
         <Button
-            android:id="@+id/button_sendImage"
-            android:layout_width="0dp"
+            android:id="@+id/button_openCamera"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Send Image"
-            android:layout_weight="1"
-            android:enabled="false"/>
+            android:text="Open Camera"
+            android:layout_weight="1"/>
 
-    </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/button_loginLogoutButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/button_sendImage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Send Image"
+                android:layout_weight="1"
+                android:enabled="false"/>
+
+        </LinearLayout>
 
 </LinearLayout>

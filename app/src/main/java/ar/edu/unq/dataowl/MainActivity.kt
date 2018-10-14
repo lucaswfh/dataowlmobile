@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -15,25 +14,18 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.provider.Settings
 import android.provider.Settings.*
-import android.util.Base64
 import android.view.View
-import ar.edu.unq.dataowl.model.PostPackage
 import ar.edu.unq.dataowl.services.HttpService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.ByteArrayOutputStream
 import com.auth0.android.result.UserProfile
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 import android.support.v4.content.FileProvider
 import android.widget.*
 import ar.edu.unq.dataowl.model.ImageHandler
-import java.util.jar.Manifest
 
 
 class MainActivity : AppCompatActivity() {
@@ -46,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     val REQUEST_TAKE_PHOTO = 1
     var mCurrentPhotoPath: String? = null
     val ih = ImageHandler()
+    var type: String? = null
 
     // Auth0 access and id tokens ("" if not logged in)
     var AUTH0_ACCESS_TOKEN: String = ""
@@ -240,14 +233,15 @@ class MainActivity : AppCompatActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.setAdapter(adapter)
 
-        spinner.onItemClickListener = AdapterView.OnItemClickListener {
-            override fun onItemSelected(parent: AdapterView<>, view: View, pos: Int , id: Long) {
-                val selected: String = parent.getItemAtPosition(pos) as String
-                Toast.makeText(getApplicationContext(), "Selected: " + selected, Toast.LENGTH_SHORT)
-                        .show()
+        spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                type = p0?.getItemAtPosition(p2) as String
             }
         }
-
     }
 
     // ++++++++++++++++ Image Handling ++++++++++++++++ //
@@ -270,7 +264,7 @@ class MainActivity : AppCompatActivity() {
         val service = HttpService()
 
         service.service.postImage(
-                "Bearer " + AUTH0_ACCESS_TOKEN, ih.prepearToSend(bitmap as Bitmap,location as Location)
+                "Bearer " + AUTH0_ACCESS_TOKEN, ih.prepearToSend(bitmap as Bitmap,location as Location, type as String)
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>?, t: Throwable?) {
                 Toast.makeText(

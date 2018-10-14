@@ -21,7 +21,7 @@ class ImageHandler {
         )
     }
 
-    fun prepearToSend(bitmap: Bitmap, location: Location): PostPackage{
+    fun prepearToSend(bitmap: Bitmap, location: Location, type: String): PostPackage{
 
         val stream = ByteArrayOutputStream()
         bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -32,7 +32,7 @@ class ImageHandler {
                 images,
                 location?.latitude.toString(),
                 location?.longitude.toString(),
-                ""
+                type
 
         )
 
