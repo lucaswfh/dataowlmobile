@@ -24,7 +24,7 @@ class ImageHandler {
     fun prepearToSend(bitmap: Bitmap, location: Location, type: String): PostPackage{
 
         val stream = ByteArrayOutputStream()
-        bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        bitmap?.compress(Bitmap.CompressFormat.JPEG, 75, stream);
         val image = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
 
         val images : List<String> = listOf<String>(image)
