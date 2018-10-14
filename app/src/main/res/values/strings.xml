@@ -14,5 +14,16 @@
     <string name="com_auth0_domain">killscript.auth0.com</string>
     <!--/Auth0-->
 
+    <!-- Spinner -->
+    <string-array name="plant_array">
+        <item>Pasto cuaresma (Digitaria sanguinalis)</item>
+        <item>Capín (Echinochloa grusgalli)</item>
+        <item>Pata de ganso (Eleusine indica)</item>
+        <item>Rama negra (Conyza bonariensis)</item>
+        <item>Yuyo colorado (Amaranthus hybridus)</item>
+        <item>Malva cimarrona (Anoda cristata)</item>
+        <item>Quinoa blanca (Chenopodium album)</item>
+    </string-array>
+    <!-- +++++++++ -->
 </resources>
 

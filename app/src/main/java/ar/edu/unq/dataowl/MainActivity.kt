@@ -19,9 +19,6 @@ import android.provider.Settings
 import android.provider.Settings.*
 import android.util.Base64
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.Toast
 import ar.edu.unq.dataowl.model.PostPackage
 import ar.edu.unq.dataowl.services.HttpService
 import retrofit2.Call
@@ -34,18 +31,21 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import android.support.v4.content.FileProvider
+import android.widget.*
+import ar.edu.unq.dataowl.model.ImageHandler
 import java.util.jar.Manifest
 
 
 class MainActivity : AppCompatActivity() {
 
-//    camera and photo
+    //Camera and Photo
     var bitmap: Bitmap? = null
     var photoFile: File? = null;
     val CAMERA_REQUEST_CODE = 0
     val REQUEST_IMAGE_CAPTURE = 1
     val REQUEST_TAKE_PHOTO = 1
     var mCurrentPhotoPath: String? = null
+    val ih = ImageHandler()
 
     // Auth0 access and id tokens ("" if not logged in)
     var AUTH0_ACCESS_TOKEN: String = ""
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     // User profile (null if not logged in)
     var profile: UserProfile? = null
 
-    //GPS
+    // GPS
     var locationManager: LocationManager? = null
     var locationListener: LocationListener? = null
     var location: Location? = null
@@ -73,11 +73,8 @@ class MainActivity : AppCompatActivity() {
                 location = lc
             }
 
-            override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
-            }
-
-            override fun onProviderEnabled(provider: String) {
-            }
+            override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+            override fun onProviderEnabled(provider: String) {}
 
             override fun onProviderDisabled(provider: String) {
                 val intent: Intent = Intent(ACTION_LOCATION_SOURCE_SETTINGS)
@@ -86,6 +83,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        //Check-in sdk version
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             if(checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
                 requestPermissions(arrayOf<String>(
@@ -115,7 +113,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Sends tokens to backend to notify login
-    // asumes AUTH0_ACCESS_TOKEN has a valide acces token
+    // Asumes AUTH0_ACCESS_TOKEN has a valide acces token
     fun sendTokensToBackend() {
         val httpService = HttpService()
 
@@ -133,22 +131,7 @@ class MainActivity : AppCompatActivity() {
                 })
     }
 
-    @Throws(IOException::class)
-    private fun createImageFile(): File {
-        // Create an image file name
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return File.createTempFile(
-                "JPEG_${timeStamp}_", /* prefix */
-                ".jpg", /* suffix */
-                storageDir /* directory */
-        ).apply {
-            // Save a file: path for use with ACTION_VIEW intents
-            mCurrentPhotoPath = absolutePath
-        }
-    }
-
-//    take photo activity result
+    // Take photo activity result
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -174,13 +157,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    sets on click button listeners
+    // ++++++++++++++++ Main Activity Buttons config ++++++++++++++++ //
+
     fun configureButtons() {
         configureOpenCameraButton()
         confireSendImageButton()
         configureLoginLogoutButton()
+        configureList()
     }
-
     private fun configureOpenCameraButton() {
         findViewById<Button>(R.id.button_openCamera).setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View) {
@@ -209,7 +193,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
     private fun confireSendImageButton() {
         val sendImageButton = findViewById<Button>(R.id.button_sendImage)
 
@@ -234,10 +217,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
-    // Says if there are images pending to be sent to backend
-    private fun hasImagesToSend(): Boolean = bitmap != null
-
     private fun configureLoginLogoutButton() {
         val loginLogoutButton = findViewById<Button>(R.id.button_loginLogoutButton)
 
@@ -255,28 +234,43 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+    private fun configureList(){
+        val spinner = findViewById<Spinner>(R.id.plant_spinner)
+        val adapter: ArrayAdapter<CharSequence> = ArrayAdapter.createFromResource(this, R.array.plant_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.setAdapter(adapter)
 
-    //    envia la imagen y notifica al usuario
+        spinner.onItemClickListener = AdapterView.OnItemClickListener {
+            override fun onItemSelected(parent: AdapterView<>, view: View, pos: Int , id: Long) {
+                val selected: String = parent.getItemAtPosition(pos) as String
+                Toast.makeText(getApplicationContext(), "Selected: " + selected, Toast.LENGTH_SHORT)
+                        .show()
+            }
+        }
+
+    }
+
+    // ++++++++++++++++ Image Handling ++++++++++++++++ //
+
+    // Creates the blank file to store the image
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        val file: File = ih.createImageFile(getExternalFilesDir(Environment.DIRECTORY_PICTURES))
+        return file.apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            mCurrentPhotoPath = absolutePath
+        }
+    }
+
+    // Says if there are images pending to be sent to backend
+    private fun hasImagesToSend(): Boolean = bitmap != null
+
+    // Sends the image and notifies the user
     private fun sendImage() {
-        // http service
         val service = HttpService()
 
-        // convert bitmap into base 64 string
-        val stream = ByteArrayOutputStream()
-        bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        val image = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
-
-        // create upload object
-        val images : List<String> = listOf<String>(image)
-        val postPackageUpload = PostPackage(
-                images,
-                location?.latitude.toString(),
-                location?.longitude.toString()
-        )
-
-        // send
         service.service.postImage(
-                "Bearer " + AUTH0_ACCESS_TOKEN, postPackageUpload
+                "Bearer " + AUTH0_ACCESS_TOKEN, ih.prepearToSend(bitmap as Bitmap,location as Location)
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>?, t: Throwable?) {
                 Toast.makeText(
@@ -300,20 +294,19 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    // ++++++++++++++++ Auth0 Intents ++++++++++++++++ //
+
     private fun login() {
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
     }
-
     private fun logout() {
         val intent = Intent(this, LoginActivity::class.java)
         intent.putExtra(LoginActivity.KEY_CLEAR_CREDENTIALS, true)
         startActivity(intent)
         finish()
     }
-
-    //    dice si el usuario esta logeado
     private fun loggedIn(): Boolean = AUTH0_ACCESS_TOKEN != ""
 
 }
