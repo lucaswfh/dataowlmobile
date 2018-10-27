@@ -21,7 +21,7 @@ class ImageHandler {
         )
     }
 
-    fun prepearToSend(bitmap: Bitmap, location: Location, type: String): PostPackage{
+    fun prepearToSend(bitmap: Bitmap, location: Location?, type: String): PostPackage{
 
         // to byte64
         val stream = ByteArrayOutputStream()
@@ -29,15 +29,23 @@ class ImageHandler {
         val image: String = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
 
         val images : List<String> = listOf<String>(image)
-        val postPackageUpload = PostPackage(
-                images,
-                location.latitude.toString(),
-                location.longitude.toString(),
-                type
 
-        )
+//        val postPackageUpload = PostPackage(
+//                images,
+//                location.latitude.toString(),
+//                location.longitude.toString(),
+//                type
+//        )
+
+        val postPackageUpload = PostPackage()
+
+        postPackageUpload.images = images
+        postPackageUpload.lat = location?.latitude.toString()
+        postPackageUpload.lng = location?.longitude.toString()
+        postPackageUpload.type = type
 
         return postPackageUpload
 
     }
+
 }

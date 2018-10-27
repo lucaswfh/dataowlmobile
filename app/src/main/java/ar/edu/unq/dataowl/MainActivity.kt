@@ -1,6 +1,7 @@
 package ar.edu.unq.dataowl
 
 import android.app.Activity
+import android.arch.persistence.room.Room
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -8,6 +9,8 @@ import android.graphics.Bitmap
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
@@ -24,8 +27,12 @@ import com.auth0.android.result.UserProfile
 import java.io.File
 import java.io.IOException
 import android.support.v4.content.FileProvider
+import android.telephony.TelephonyManager
 import android.widget.*
 import ar.edu.unq.dataowl.model.ImageHandler
+import ar.edu.unq.dataowl.model.PostPackage
+import ar.edu.unq.dataowl.persistence.AppDatabase
+import ar.edu.unq.dataowl.persistence.DbWorkerThread
 
 
 class MainActivity : AppCompatActivity() {
@@ -51,6 +58,9 @@ class MainActivity : AppCompatActivity() {
     var locationManager: LocationManager? = null
     var locationListener: LocationListener? = null
     var location: Location? = null
+
+    // DB
+    private lateinit var dbWorkerThread: DbWorkerThread
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -259,12 +269,66 @@ class MainActivity : AppCompatActivity() {
     // Says if there are images pending to be sent to backend
     private fun hasImagesToSend(): Boolean = bitmap != null
 
-    // Sends the image and notifies the user
+    // Tryes to sends the image and notifies the user
+    // If no network conectivity, persist to app database
     private fun sendImage() {
+        val postPackage = ih.prepearToSend(bitmap as Bitmap, location, type as String)
+
+        val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        val connectivity = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val isConnectedToWifi: Boolean =
+                cm.activeNetworkInfo != null &&
+                cm.activeNetworkInfo.isConnected &&
+                cm.activeNetworkInfo.type == ConnectivityManager.TYPE_WIFI
+
+        if (isConnectedToWifi) {
+            uploadImage(postPackage)
+            return
+        }
+
+        persistImage(postPackage)
+    }
+
+    // Persist image to app database
+    private fun persistImage(postPackage: PostPackage) {
+        val db = Room.databaseBuilder(
+                applicationContext,
+                AppDatabase::class.java,
+                "database-name"
+        )
+                .allowMainThreadQueries()
+                .build()
+
+        val postPackageDao = db.postPackageDao()
+        dbWorkerThread = DbWorkerThread("dbWorkerThread")
+        dbWorkerThread.start()
+
+//        val task = Runnable {
+            postPackageDao.insert(postPackage)
+//        }
+//        dbWorkerThread.postTask(task)
+
+        Toast.makeText(
+                this@MainActivity,
+                "No network conectivity, saving image to send later!",
+                Toast.LENGTH_LONG
+        ).show()
+
+//        val task2 = Runnable {
+            val posts = postPackageDao.getImagesNotSent()
+//        }
+//        dbWorkerThread.postTask(task2)
+        val a = "asd"
+    }
+
+    // Uploads package to backend
+    // Asumes network conectivity
+    private fun uploadImage(postPackage: PostPackage) {
         val service = HttpService()
 
         service.service.postImage(
-                "Bearer " + AUTH0_ACCESS_TOKEN, ih.prepearToSend(bitmap as Bitmap,location as Location, type as String)
+                "Bearer " + AUTH0_ACCESS_TOKEN, postPackage
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>?, t: Throwable?) {
                 Toast.makeText(
@@ -287,6 +351,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
 
     // ++++++++++++++++ Auth0 Intents ++++++++++++++++ //
 
