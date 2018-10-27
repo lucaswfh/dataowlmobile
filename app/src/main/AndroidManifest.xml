@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".LoginActivity" />
-        <activity android:name=".TestActivity"></activity>
+        <activity android:name=".TestActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
