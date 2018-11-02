@@ -21,6 +21,7 @@ import kotlinx.android.synthetic.main.post_list_content.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.ArrayList
 
 /**
  * An activity representing a list of Pings. This activity
@@ -71,14 +72,16 @@ class PostListActivity : AppCompatActivity() {
             twoPane = true
         }
 
+        createPostList()
+
         setupRecyclerView(findViewById(R.id.post_list))
         initializeAuth0()
         configureLoginLogoutButton()
-
-        createPostList()
     }
 
     private fun createPostList() {
+        packages = null
+        PostsObjects.ITEMS = ArrayList()
         val db: AppDatabase = AppDatabase.getInstance(this@PostListActivity) as AppDatabase
         packages = db.postPackageDao().getAll()
         for (p: PostPackage in packages as MutableList) {

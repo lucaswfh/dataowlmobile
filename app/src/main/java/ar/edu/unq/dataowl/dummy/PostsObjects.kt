@@ -13,7 +13,7 @@ import java.util.HashMap
  */
 object PostsObjects {
 
-    val ITEMS: MutableList<PostPackage> = ArrayList()
+    var ITEMS: MutableList<PostPackage> = ArrayList()
 
     /**
      * A map of sample (dummy) items, by ID.
