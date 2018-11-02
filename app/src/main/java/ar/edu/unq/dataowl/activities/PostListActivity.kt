@@ -40,8 +40,10 @@ class PostListActivity : AppCompatActivity() {
         toolbar.title = title
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                    .setAction("Action", null).show()
+            val intent = Intent(this, CreatePostActivity::class.java)
+            startActivity(intent)
         }
 
         if (post_detail_container != null) {

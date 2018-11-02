@@ -2,18 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ar.edu.unq.dataowl">
 
-    <uses-permission
-        android:name="android.permission.INTERNET" />
-    <uses-permission
-        android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission
-        android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission
-        android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission
         android:name="android.permission.IMAGE_CAPTURE"
         android:required="true" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -21,10 +18,12 @@
         android:allowBackup="true"
         android:icon="@mipmap/icon2"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:largeHeap="true">
-        <!--<activity android:name=".MainActivity">
+        android:theme="@style/AppTheme">
+
+        <!--
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -53,6 +52,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ar.edu.unq.dataowl.activities.PostListActivity" />
         </activity>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="ar.edu.unq.dataowl.fileprovider"
@@ -60,8 +60,10 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"/>
+                android:resource="@xml/file_paths" />
         </provider>
+
+        <activity android:name=".activities.CreatePostActivity"></activity>
     </application>
 
 </manifest>
