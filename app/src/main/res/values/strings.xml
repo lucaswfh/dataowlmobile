@@ -1,6 +1,7 @@
 <resources>
 
     <string name="app_name">DataOwl</string>
+    <string name="title_post_detail">Post Detail</string>
 
     <!--LoginActivity-->
     <string name="refresh">Refresh the access_token</string>

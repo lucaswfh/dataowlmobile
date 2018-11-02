@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:weightSum="10"
     android:orientation="vertical"
-    tools:context="ar.edu.unq.dataowl.MainActivity">
+    tools:context="ar.edu.unq.dataowl.activities.MainActivity">
 
     <ImageView
         android:id="@+id/imageView_photo"

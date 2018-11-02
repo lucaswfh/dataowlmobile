@@ -1,4 +1,4 @@
-package ar.edu.unq.dataowl
+package ar.edu.unq.dataowl.activities
 
 import android.app.Dialog
 import android.support.v7.app.AppCompatActivity
@@ -17,6 +17,7 @@ import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.provider.AuthCallback
 import com.auth0.android.provider.WebAuthProvider
 import android.widget.Toast
+import ar.edu.unq.dataowl.R
 import com.auth0.android.management.UsersAPIClient
 
 

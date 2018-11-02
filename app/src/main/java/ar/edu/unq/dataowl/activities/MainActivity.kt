@@ -1,4 +1,4 @@
-package ar.edu.unq.dataowl
+package ar.edu.unq.dataowl.activities
 
 import android.app.Activity
 import android.arch.persistence.room.Room
@@ -10,7 +10,6 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
@@ -27,8 +26,8 @@ import com.auth0.android.result.UserProfile
 import java.io.File
 import java.io.IOException
 import android.support.v4.content.FileProvider
-import android.telephony.TelephonyManager
 import android.widget.*
+import ar.edu.unq.dataowl.R
 import ar.edu.unq.dataowl.model.ImageHandler
 import ar.edu.unq.dataowl.model.PostPackage
 import ar.edu.unq.dataowl.persistence.AppDatabase
