@@ -17,8 +17,22 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:elevation="4dp"
+            app:logo="@drawable/logo"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/loginButtonNew"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+        </LinearLayout>
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
@@ -36,7 +50,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
-
+        app:srcCompat="@android:drawable/ic_input_add" />
 
 </android.support.design.widget.CoordinatorLayout>

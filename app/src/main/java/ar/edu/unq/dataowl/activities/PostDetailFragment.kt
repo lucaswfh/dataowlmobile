@@ -5,8 +5,8 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import ar.edu.unq.dataowl.PostsObjects
 import ar.edu.unq.dataowl.R
-import com.example.test.dummy.DummyContent
 import kotlinx.android.synthetic.main.activity_post_detail.*
 import kotlinx.android.synthetic.main.post_detail.view.*
 
@@ -21,7 +21,7 @@ class PostDetailFragment : Fragment() {
     /**
      * The dummy content this fragment is presenting.
      */
-    private var item: DummyContent.DummyItem? = null
+    private var item: PostsObjects.PostItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +31,7 @@ class PostDetailFragment : Fragment() {
                 // Load the dummy content specified by the fragment
                 // arguments. In a real-world scenario, use a Loader
                 // to load content from a content provider.
-                item = DummyContent.ITEM_MAP[it.getString(ARG_ITEM_ID)]
+                item = PostsObjects.ITEM_MAP[it.getString(ARG_ITEM_ID)]
                 activity?.toolbar_layout?.title = item?.content
             }
         }

@@ -4,17 +4,20 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
-import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
+import ar.edu.unq.dataowl.PostsObjects
 import ar.edu.unq.dataowl.R
-
-import com.example.test.dummy.DummyContent
+import ar.edu.unq.dataowl.services.HttpService
 import kotlinx.android.synthetic.main.activity_post_list.*
-import kotlinx.android.synthetic.main.post_list_content.view.*
 import kotlinx.android.synthetic.main.post_list.*
+import kotlinx.android.synthetic.main.post_list_content.view.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 /**
  * An activity representing a list of Pings. This activity
@@ -24,25 +27,25 @@ import kotlinx.android.synthetic.main.post_list.*
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
+
 class PostListActivity : AppCompatActivity() {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
+
     private var twoPane: Boolean = false
+
+    // Auth0 access and id tokens ("" if not logged in)
+    var AUTH0_ACCESS_TOKEN: String = ""
+    var AUTH0_ID_TOKEN:     String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post_list)
 
         setSupportActionBar(toolbar)
-        toolbar.title = title
-
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
 
         if (post_detail_container != null) {
             // The detail container view will be present only in the
@@ -53,14 +56,16 @@ class PostListActivity : AppCompatActivity() {
         }
 
         setupRecyclerView(post_list)
+        initializeAuth0()
+        configureLoginLogoutButton()
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, twoPane)
+        recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, PostsObjects.ITEMS, twoPane)
     }
 
     class SimpleItemRecyclerViewAdapter(private val parentActivity: PostListActivity,
-                                        private val values: List<DummyContent.DummyItem>,
+                                        private val values: List<PostsObjects.PostItem>,
                                         private val twoPane: Boolean) :
             RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>() {
 
@@ -68,7 +73,7 @@ class PostListActivity : AppCompatActivity() {
 
         init {
             onClickListener = View.OnClickListener { v ->
-                val item = v.tag as DummyContent.DummyItem
+                val item = v.tag as PostsObjects.PostItem
                 if (twoPane) {
                     val fragment = PostDetailFragment().apply {
                         arguments = Bundle().apply {
@@ -112,4 +117,80 @@ class PostListActivity : AppCompatActivity() {
             val contentView: TextView = view.content
         }
     }
+
+
+    // ++++++++++++++++ Buttons config ++++++++++++++++ //
+
+    private fun configureLoginLogoutButton() {
+        val loginLogoutButton = findViewById<Button>(R.id.loginButtonNew)
+
+        if (loggedIn())
+            loginLogoutButton.text = "LOG OUT"
+        else
+            loginLogoutButton.text = "LOG IN"
+
+        loginLogoutButton.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(p0: View?) {
+                if (loggedIn())
+                    logout()
+                else
+                    login()
+            }
+        })
+    }
+
+
+    // ++++++++++++++++ Auth0 Intents ++++++++++++++++ //
+
+    private fun login() {
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+    private fun logout() {
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.putExtra(LoginActivity.KEY_CLEAR_CREDENTIALS, true)
+        startActivity(intent)
+        finish()
+    }
+    private fun loggedIn(): Boolean = AUTH0_ACCESS_TOKEN != ""
+
+
+    // ++++++++++++++++ Auth0 Config ++++++++++++++++ //
+
+    fun initializeAuth0() {
+        // Get Auth0 Tokens
+        val token = intent.getStringExtra(LoginActivity.EXTRA_ACCESS_TOKEN)
+        val idtkn = intent.getStringExtra(LoginActivity.EXTRA_ID_TOKEN)
+        if (token != null) {
+            AUTH0_ACCESS_TOKEN = token
+            AUTH0_ID_TOKEN = idtkn
+        }
+
+        // If logged in, notify backend
+        if (loggedIn())
+//            getUserProfileAndNotifyBackend()
+            sendTokensToBackend()
+    }
+
+    // Sends tokens to backend to notify login
+    // Asumes AUTH0_ACCESS_TOKEN has a valide acces token
+    fun sendTokensToBackend() {
+        val httpService = HttpService()
+
+        httpService.service.userLogIn("Bearer " + AUTH0_ACCESS_TOKEN)
+                .enqueue(object: Callback<String> {
+
+                    override fun onResponse(call: Call<String>?, response: Response<String>?) {
+                        //TODO: To change body of created functions use File | Settings | File Templates.
+                    }
+
+                    override fun onFailure(call: Call<String>?, t: Throwable?) {
+                        //TODO: To change body of created functions use File | Settings | File Templates.
+                    }
+
+                })
+    }
+
 }
+
