@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import ar.edu.unq.dataowl.R
+import ar.edu.unq.dataowl.model.PostPackage
 import kotlinx.android.synthetic.main.activity_post_detail.*
 
 /**
@@ -42,6 +43,7 @@ class PostDetailActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
+            val a = intent.getStringExtra(PostDetailFragment.ARG_ITEM_ID)
             val fragment = PostDetailFragment().apply {
                 arguments = Bundle().apply {
                     putString(PostDetailFragment.ARG_ITEM_ID,
@@ -53,6 +55,8 @@ class PostDetailActivity : AppCompatActivity() {
                     .add(R.id.post_detail_container, fragment)
                     .commit()
         }
+
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem) =

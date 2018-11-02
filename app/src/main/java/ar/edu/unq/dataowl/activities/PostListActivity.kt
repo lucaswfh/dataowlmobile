@@ -115,7 +115,7 @@ class PostListActivity : AppCompatActivity() {
                             .commit()
                 } else {
                     val intent = Intent(v.context, PostDetailActivity::class.java).apply {
-                        putExtra(PostDetailFragment.ARG_ITEM_ID, item.id)
+                        putExtra(PostDetailFragment.ARG_ITEM_ID, item.id.toString())
                     }
                     v.context.startActivity(intent)
                 }

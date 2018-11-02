@@ -32,7 +32,7 @@ object PostsObjects {
 
     fun addItem(item: PostPackage) {
         ITEMS.add(item)
-        ITEM_MAP.put("asd", item)
+        ITEM_MAP.put(item.id.toString(), item)
     }
 
 

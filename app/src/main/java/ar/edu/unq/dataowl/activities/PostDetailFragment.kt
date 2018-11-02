@@ -32,6 +32,7 @@ class PostDetailFragment : Fragment() {
                 // Load the dummy content specified by the fragment
                 // arguments. In a real-world scenario, use a Loader
                 // to load content from a content provider.
+                val a = it.getString(ARG_ITEM_ID)
                 item = PostsObjects.ITEM_MAP[it.getString(ARG_ITEM_ID)]
                 activity?.toolbar_layout?.title = item?.type
             }
