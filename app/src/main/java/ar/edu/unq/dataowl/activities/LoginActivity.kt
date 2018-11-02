@@ -113,7 +113,7 @@ class LoginActivity : AppCompatActivity() {
 
     // Shows next activity without credentials (to use if just logged out)
     private fun showNextActivity() {
-        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+        val intent = Intent(this@LoginActivity, PostListActivity::class.java)
         startActivity(intent)
         finish()
     }
@@ -121,7 +121,7 @@ class LoginActivity : AppCompatActivity() {
     // Shows next activity with credentials (to use if just logged in)
     // Gets user profile
     private fun showNextActivity(credentials: Credentials) {
-        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+        val intent = Intent(this@LoginActivity, PostListActivity::class.java)
         intent.putExtra(EXTRA_ACCESS_TOKEN, credentials.accessToken)
         intent.putExtra(EXTRA_ID_TOKEN, credentials.idToken)
         startActivity(intent)

@@ -1,9 +1,8 @@
 package ar.edu.unq.dataowl.model
 
-import android.arch.persistence.room.ColumnInfo
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.TypeConverters
-import android.arch.persistence.room.PrimaryKey
+import android.arch.persistence.room.*
+import android.content.Context
+import ar.edu.unq.dataowl.persistence.AppDatabase
 
 /**
  * Created by wolfx on 18/08/2018.
@@ -22,5 +21,12 @@ class PostPackage (
 ){
 
     constructor(): this(null, listOf(""), null, null, "", false)
+
+    fun persist(context: Context) {
+        val db: AppDatabase = AppDatabase.getInstance(context) as AppDatabase
+
+        val postPackageDao = db.postPackageDao()
+        postPackageDao.insert(this)
+    }
 
 }

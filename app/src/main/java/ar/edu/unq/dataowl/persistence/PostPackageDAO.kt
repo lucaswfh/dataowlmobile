@@ -17,6 +17,9 @@ interface PostPackageDAO {
     @Delete
     fun delete(postPackage: PostPackage)
 
+    @Query("select * from PostPackage")
+    fun getAll(): List<PostPackage>
+
     @Query("select * from PostPackage where sent = 0")
     fun getImagesNotSent(): List<PostPackage>
 }

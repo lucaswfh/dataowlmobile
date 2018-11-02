@@ -1,5 +1,6 @@
-package com.example.test.dummy
+package ar.edu.unq.dataowl
 
+import ar.edu.unq.dataowl.model.PostPackage
 import java.util.ArrayList
 import java.util.HashMap
 
@@ -9,36 +10,31 @@ import java.util.HashMap
  *
  * TODO: Replace all uses of this class before publishing your app.
  */
-object DummyContent {
+object PostsObjects {
 
-    /**
-     * An array of sample (dummy) items.
-     */
-    val ITEMS: MutableList<DummyItem> = ArrayList()
+    val ITEMS: MutableList<PostPackage> = ArrayList()
 
     /**
      * A map of sample (dummy) items, by ID.
      */
-    val ITEM_MAP: MutableMap<String, DummyItem> = HashMap()
+    val ITEM_MAP: MutableMap<String, PostPackage> = HashMap()
 
-    private val COUNT = 25
+   // private val COUNT = 25
 
-    init {
+    /*init {
         // Add some sample items.
         for (i in 1..COUNT) {
             addItem(createDummyItem(i))
         }
-    }
+    }*/
 
-    private fun addItem(item: DummyItem) {
+    private fun addItem(item: PostPackage) {
         ITEMS.add(item)
-        ITEM_MAP.put(item.id, item)
+        ITEM_MAP.put("asd", item)
     }
 
-    private fun createDummyItem(position: Int): DummyItem {
-        return DummyItem(position.toString(), "Item " + position, makeDetails(position))
-    }
 
+    /*
     private fun makeDetails(position: Int): String {
         val builder = StringBuilder()
         builder.append("Details about Item: ").append(position)
@@ -46,12 +42,13 @@ object DummyContent {
             builder.append("\nMore details information here.")
         }
         return builder.toString()
-    }
+    }*/
 
     /**
      * A dummy item representing a piece of content.
      */
-    data class DummyItem(val id: String, val content: String, val details: String) {
+    data class PostItem(val id: String, val content: String, val details: String) {
+
         override fun toString(): String = content
     }
 }

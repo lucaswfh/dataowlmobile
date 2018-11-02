@@ -1,18 +1,21 @@
 package ar.edu.unq.dataowl.activities
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.Settings
 import android.support.v4.content.FileProvider
 import android.view.View
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.Toast
+import android.widget.*
 import ar.edu.unq.dataowl.R
 import ar.edu.unq.dataowl.model.ImageHandler
 import java.io.File
@@ -25,20 +28,80 @@ class CreatePostActivity : AppCompatActivity() {
 
     val ih = ImageHandler()
     var mCurrentPhotoPath: String? = null
-
+    var type: String? = null
     var bitmap: Bitmap? = null
+
+    // GPS
+    var locationManager: LocationManager? = null
+    var locationListener: LocationListener? = null
+    var location: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_post)
 
         configureButtons()
+        configureList()
+
+        this.locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        this.locationListener = object : LocationListener {
+            override fun onLocationChanged(lc: Location) {
+                // Called when a new location is found by the network location provider.
+                location = lc
+            }
+
+            override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+            override fun onProviderEnabled(provider: String) {}
+
+            override fun onProviderDisabled(provider: String) {
+                val intent: Intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+            }
+        }
     }
 
     /**
      * configura todos los botones de la activity
      */
     private fun configureButtons() {
+        configureImageButton1()
+        configureOkButton()
+    }
+
+    fun configureOkButton() {
+        findViewById<Button>(R.id.buttonOk).setOnClickListener(object: View.OnClickListener {
+            override fun onClick(p0: View?) {
+                val postPackage = ih.prepearToSend(bitmap as Bitmap, location, type as String)
+                postPackage.persist(this@CreatePostActivity)
+                showNextActivity()
+            }
+        })
+    }
+
+    private fun showNextActivity() {
+        val intent = Intent(this@CreatePostActivity, PostListActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun configureList(){
+        val spinner = findViewById<Spinner>(R.id.plant_spinner1)
+        val adapter: ArrayAdapter<CharSequence> = ArrayAdapter.createFromResource(this, R.array.plant_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.setAdapter(adapter)
+
+        spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                type = p0?.getItemAtPosition(p2) as String
+            }
+        }
+    }
+
+    private fun configureImageButton1() {
         findViewById<ImageButton>(R.id.imageButton1).setOnClickListener(object: View.OnClickListener {
             override fun onClick(p0: View?) {
                 Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
@@ -75,8 +138,7 @@ class CreatePostActivity : AppCompatActivity() {
             REQUEST_IMAGE_CAPTURE -> {
                 if (resultCode == Activity.RESULT_OK) {
                     runOnUiThread {
-                        val btn: Button = findViewById<Button>(R.id.button_sendImage)
-                        btn.isEnabled = true
+
                     }
 
                     val file = File(mCurrentPhotoPath)
@@ -84,7 +146,7 @@ class CreatePostActivity : AppCompatActivity() {
                             .getBitmap(this@CreatePostActivity.getContentResolver(), Uri.fromFile(file))
 
                     if (bitmap != null)
-                        findViewById<ImageButton>(R.id.imageView_photo).setImageBitmap(bitmap)
+                        findViewById<ImageButton>(R.id.imageButton1).setImageBitmap(bitmap)
                 }
             }
             else -> {
