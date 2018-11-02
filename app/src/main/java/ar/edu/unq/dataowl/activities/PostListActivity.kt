@@ -1,6 +1,5 @@
 package ar.edu.unq.dataowl.activities
 
-import android.arch.persistence.room.Room
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
@@ -18,8 +17,6 @@ import ar.edu.unq.dataowl.R
 import ar.edu.unq.dataowl.model.PostPackage
 import ar.edu.unq.dataowl.persistence.AppDatabase
 import ar.edu.unq.dataowl.services.HttpService
-import kotlinx.android.synthetic.main.activity_post_list.*
-import kotlinx.android.synthetic.main.post_list.*
 import kotlinx.android.synthetic.main.post_list_content.view.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -84,7 +81,9 @@ class PostListActivity : AppCompatActivity() {
     private fun createPostList() {
         val db: AppDatabase = AppDatabase.getInstance(this@PostListActivity) as AppDatabase
         packages = db.postPackageDao().getAll()
-
+        for (p: PostPackage in packages as MutableList) {
+            PostsObjects.addItem(p)
+        }
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
@@ -128,8 +127,8 @@ class PostListActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = values[position]
-           // holder.idView.text = item.id.toString()
-            //holder.contentView.text = item.type
+            holder.idView.text = item.id.toString()
+            holder.contentView.text = item.type
 
             with(holder.itemView) {
                 tag = item
@@ -140,8 +139,8 @@ class PostListActivity : AppCompatActivity() {
         override fun getItemCount() = values.size
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            /*val idView: TextView = view.id_text
-            val contentView: TextView = view.content*/
+            val idView: TextView = view.id_text
+            val contentView: TextView = view.content
         }
     }
 

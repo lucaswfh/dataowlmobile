@@ -23,15 +23,14 @@ object PostsObjects {
    // private val COUNT = 25
 
     init {
-        val db: AppDatabase = AppDatabase.getInstance() as AppDatabase
-        val packages = db.postPackageDao().getAll()
-        for (p: PostPackage in packages) {
-            addItem(p)
-        }
-        }
+//        val db: AppDatabase = AppDatabase.getInstance() as AppDatabase
+//        val packages = db.postPackageDao().getAll()
+//        for (p: PostPackage in packages) {
+//            addItem(p)
+//        }
     }
 
-    private fun addItem(item: PostPackage) {
+    fun addItem(item: PostPackage) {
         ITEMS.add(item)
         ITEM_MAP.put("asd", item)
     }
