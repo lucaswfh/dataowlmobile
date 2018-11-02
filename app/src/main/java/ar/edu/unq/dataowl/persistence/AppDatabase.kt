@@ -21,7 +21,8 @@ abstract class AppDatabase : RoomDatabase() {
             if (INSTANCE == null) {
                 synchronized(AppDatabase::class) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            AppDatabase::class.java, "weather.db")
+                            AppDatabase::class.java, "dataowl")
+                            .allowMainThreadQueries()
                             .build()
                 }
             }

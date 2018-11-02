@@ -1,6 +1,7 @@
 package ar.edu.unq.dataowl
 
 import ar.edu.unq.dataowl.model.PostPackage
+import ar.edu.unq.dataowl.persistence.AppDatabase
 import java.util.ArrayList
 import java.util.HashMap
 
@@ -21,12 +22,14 @@ object PostsObjects {
 
    // private val COUNT = 25
 
-    /*init {
-        // Add some sample items.
-        for (i in 1..COUNT) {
-            addItem(createDummyItem(i))
+    init {
+        val db: AppDatabase = AppDatabase.getInstance() as AppDatabase
+        val packages = db.postPackageDao().getAll()
+        for (p: PostPackage in packages) {
+            addItem(p)
         }
-    }*/
+        }
+    }
 
     private fun addItem(item: PostPackage) {
         ITEMS.add(item)
@@ -43,12 +46,4 @@ object PostsObjects {
         }
         return builder.toString()
     }*/
-
-    /**
-     * A dummy item representing a piece of content.
-     */
-    data class PostItem(val id: String, val content: String, val details: String) {
-
-        override fun toString(): String = content
-    }
 }

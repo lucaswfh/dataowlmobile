@@ -3,8 +3,11 @@ package ar.edu.unq.dataowl.activities
 import android.arch.persistence.room.Room
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
+import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,9 +53,11 @@ class PostListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post_list)
 
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         toolbar.title = title
 
+        val fab = findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener { view ->
 //            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                    .setAction("Action", null).show()
@@ -60,6 +65,7 @@ class PostListActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        val post_detail_container = findViewById<NestedScrollView>(R.id.post_detail_container)
         if (post_detail_container != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -68,7 +74,7 @@ class PostListActivity : AppCompatActivity() {
             twoPane = true
         }
 
-        setupRecyclerView(post_list)
+        setupRecyclerView(findViewById(R.id.post_list))
         initializeAuth0()
         configureLoginLogoutButton()
 
@@ -79,9 +85,6 @@ class PostListActivity : AppCompatActivity() {
         val db: AppDatabase = AppDatabase.getInstance(this@PostListActivity) as AppDatabase
         packages = db.postPackageDao().getAll()
 
-        for (p: PostPackage in packages as List<PostPackage>) {
-
-        }
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
@@ -89,7 +92,7 @@ class PostListActivity : AppCompatActivity() {
     }
 
     class SimpleItemRecyclerViewAdapter(private val parentActivity: PostListActivity,
-                                        private val values: List<PostsObjects.PostItem>,
+                                        private val values: MutableList<PostPackage>,
                                         private val twoPane: Boolean) :
             RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>() {
 
@@ -97,11 +100,11 @@ class PostListActivity : AppCompatActivity() {
 
         init {
             onClickListener = View.OnClickListener { v ->
-                val item = v.tag as PostsObjects.PostItem
+                val item = v.tag as PostPackage
                 if (twoPane) {
                     val fragment = PostDetailFragment().apply {
                         arguments = Bundle().apply {
-                            putString(PostDetailFragment.ARG_ITEM_ID, item.id)
+                            putString(PostDetailFragment.ARG_ITEM_ID, item.id.toString())
                         }
                     }
                     parentActivity.supportFragmentManager
@@ -125,8 +128,8 @@ class PostListActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = values[position]
-            holder.idView.text = item.id
-            holder.contentView.text = item.content
+           // holder.idView.text = item.id.toString()
+            //holder.contentView.text = item.type
 
             with(holder.itemView) {
                 tag = item
@@ -137,8 +140,8 @@ class PostListActivity : AppCompatActivity() {
         override fun getItemCount() = values.size
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val idView: TextView = view.id_text
-            val contentView: TextView = view.content
+            /*val idView: TextView = view.id_text
+            val contentView: TextView = view.content*/
         }
     }
 
