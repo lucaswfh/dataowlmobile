@@ -1,9 +1,6 @@
 package ar.edu.unq.dataowl.persistence
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
 import ar.edu.unq.dataowl.model.PostPackage
 
 /**
@@ -14,8 +11,14 @@ interface PostPackageDAO {
     @Insert
     fun insert(postPackage: PostPackage)
 
+    @Update
+    fun update(postPackage: PostPackage)
+
     @Delete
     fun delete(postPackage: PostPackage)
+
+    @Query("delete from PostPackage")
+    fun deleteAll()
 
     @Query("select * from PostPackage")
     fun getAll(): List<PostPackage>

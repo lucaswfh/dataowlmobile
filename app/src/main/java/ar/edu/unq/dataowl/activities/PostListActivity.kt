@@ -1,6 +1,8 @@
 package ar.edu.unq.dataowl.activities
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.widget.NestedScrollView
@@ -12,10 +14,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import ar.edu.unq.dataowl.PostsObjects
 import ar.edu.unq.dataowl.R
 import ar.edu.unq.dataowl.model.PostPackage
 import ar.edu.unq.dataowl.persistence.AppDatabase
+import ar.edu.unq.dataowl.persistence.PostPackageDAO
 import ar.edu.unq.dataowl.services.HttpService
 import kotlinx.android.synthetic.main.post_list_content.view.*
 import retrofit2.Call
@@ -77,6 +81,63 @@ class PostListActivity : AppCompatActivity() {
         setupRecyclerView(findViewById(R.id.post_list))
         initializeAuth0()
         configureLoginLogoutButton()
+
+        trySendImagesNotSent()
+    }
+
+    private fun trySendImagesNotSent() {
+        val db = AppDatabase.getInstance(this@PostListActivity)
+        val dao = db?.postPackageDao()
+        val packages = dao?.getImagesNotSent()
+        if (packages != null) {
+            for (p in packages) {
+                val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+                val connectivity = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                val isConnectedToWifi: Boolean =
+                        cm.activeNetworkInfo != null &&
+                                cm.activeNetworkInfo.isConnected &&
+                                cm.activeNetworkInfo.type == ConnectivityManager.TYPE_WIFI
+
+                if (isConnectedToWifi) {
+                    uploadImage(p, dao)
+                    return
+                }
+            }
+        }
+    }
+
+    // Uploads package to backend
+    // Asumes network conectivity
+    private fun uploadImage(postPackage: PostPackage, dao: PostPackageDAO) {
+        val service = HttpService()
+
+        service.service.postImage(
+                "Bearer " + AUTH0_ACCESS_TOKEN, postPackage
+        ).enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>?, t: Throwable?) {
+                Toast.makeText(
+                        this@PostListActivity,
+                        "Image not sent! Retrying on next application start",
+                        Toast.LENGTH_SHORT
+                ).show()
+
+                // TODO: handlear el error
+            }
+
+            override fun onResponse(call: Call<String>?, response: Response<String>?) {
+                Toast.makeText(
+                        this@PostListActivity,
+                        "Image sent correctly!",
+                        Toast.LENGTH_SHORT
+                ).show()
+
+                postPackage.sent = true
+                dao.update(postPackage)
+
+                // TODO: hacer algo con la respuesta?
+            }
+        })
     }
 
     private fun createPostList() {

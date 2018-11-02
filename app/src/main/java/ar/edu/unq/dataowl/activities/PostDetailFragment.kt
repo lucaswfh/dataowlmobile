@@ -1,13 +1,20 @@
 package ar.edu.unq.dataowl.activities
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
+import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import ar.edu.unq.dataowl.PostsObjects
 import ar.edu.unq.dataowl.R
 import ar.edu.unq.dataowl.model.PostPackage
+import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_post_detail.*
 import kotlinx.android.synthetic.main.post_detail.view.*
 
@@ -36,6 +43,15 @@ class PostDetailFragment : Fragment() {
                 item = PostsObjects.ITEM_MAP[it.getString(ARG_ITEM_ID)]
                 activity?.toolbar_layout?.title = item?.type
             }
+        }
+
+        if (item != null) {
+            val sent = item?.sent as Boolean
+            val tv = view?.findViewById<TextView>(R.id.textViewPostDetailSent)
+            if (sent)
+                tv?.text = "SENT: YES"
+            else
+                tv?.text = "SENT: NO"
         }
     }
 

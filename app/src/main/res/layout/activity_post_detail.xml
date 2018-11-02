@@ -51,4 +51,17 @@
         app:layout_anchorGravity="top|end"
         app:srcCompat="@android:drawable/stat_notify_chat" />
 
+    <TextView
+        android:id="@+id/textViewPostDetailSent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sent: "
+        android:layout_gravity="bottom"/>
+
+    <ImageView
+        android:id="@+id/imageViewDetail1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"/>
+
 </android.support.design.widget.CoordinatorLayout>
