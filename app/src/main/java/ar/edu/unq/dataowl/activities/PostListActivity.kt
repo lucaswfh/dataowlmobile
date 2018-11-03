@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
@@ -102,6 +103,12 @@ class PostListActivity : AppCompatActivity() {
                 if (isConnectedToWifi) {
                     uploadImage(p, dao)
                     return
+                } else {
+                    Toast.makeText(
+                            this@PostListActivity,
+                            "Please connect to wifi and try again!",
+                            Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -144,7 +151,7 @@ class PostListActivity : AppCompatActivity() {
         packages = null
         PostsObjects.ITEMS = ArrayList()
         val db: AppDatabase = AppDatabase.getInstance(this@PostListActivity) as AppDatabase
-        db.postPackageDao().deleteAll()
+//        db.postPackageDao().deleteAll()
         packages = db.postPackageDao().getAll()
         for (p: PostPackage in packages as MutableList) {
             PostsObjects.addItem(p)
