@@ -22,11 +22,12 @@ class PostDetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_post_detail)
         setSupportActionBar(detail_toolbar)
 
+        /*
         fab.setOnClickListener { view ->
             /*Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()*/
             //TODO: ver si es necesario este boton
-        }
+        }*/
 
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
