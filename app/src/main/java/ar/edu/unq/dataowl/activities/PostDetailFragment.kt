@@ -1,7 +1,5 @@
 package ar.edu.unq.dataowl.activities
 
-import android.content.Context
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -73,5 +71,7 @@ class PostDetailFragment : Fragment() {
          * represents.
          */
         const val ARG_ITEM_ID = "item_id"
+        const val AUTH0_ACCESS_TOKEN: String = "access_token"
+        const val AUTH0_ID_TOKEN:     String = "id_token"
     }
 }
