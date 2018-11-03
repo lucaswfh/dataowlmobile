@@ -42,24 +42,25 @@ class PostDetailFragment : Fragment() {
                 activity?.toolbar_layout?.title = item?.type
             }
         }
-
-        if (item != null) {
-            val sent = item?.sent as Boolean
-            val tv = view?.findViewById<TextView>(R.id.textViewPostDetailSent)
-            if (sent)
-                tv?.text = "SENT: YES"
-            else
-                tv?.text = "SENT: NO"
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.post_detail, container, false)
 
-        // Show the dummy content as text in a TextView.
         item?.let {
-            rootView.post_detail.text = it.type
+            val builder = StringBuilder()
+            val status: String
+            if(it.sent)
+                status = "Yes"
+            else
+                status = "No"
+            rootView.post_detail.text =
+                    builder.append("\nLatitude: ").append(it.lat)
+                            .append("\nLongitude: ").append(it.lng)
+                            .append("\nType Selected: ").append(it.type)
+                            .append("\nSent Status: ").append(status)
+                            .toString()
         }
 
         return rootView
