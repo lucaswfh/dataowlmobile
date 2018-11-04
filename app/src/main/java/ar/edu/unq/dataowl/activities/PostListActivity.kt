@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
@@ -62,6 +63,8 @@ class PostListActivity : AppCompatActivity() {
 //            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                    .setAction("Action", null).show()
             val intent = Intent(this, CreatePostActivity::class.java)
+            intent.putExtra(PostDetailFragment.AUTH0_ACCESS_TOKEN, AUTH0_ACCESS_TOKEN)
+            intent.putExtra(PostDetailFragment.AUTH0_ID_TOKEN, AUTH0_ID_TOKEN)
             startActivity(intent)
         }
 
@@ -78,7 +81,7 @@ class PostListActivity : AppCompatActivity() {
 
         setupRecyclerView(findViewById(R.id.post_list))
         initializeAuth0()
-
+        
         trySendImagesNotSent()
     }
 
@@ -99,6 +102,12 @@ class PostListActivity : AppCompatActivity() {
                 if (isConnectedToWifi) {
                     uploadImage(p, dao)
                     return
+                } else {
+                    Toast.makeText(
+                            this@PostListActivity,
+                            "Please connect to wifi and try again!",
+                            Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -141,6 +150,7 @@ class PostListActivity : AppCompatActivity() {
         packages = null
         PostsObjects.ITEMS = ArrayList()
         val db: AppDatabase = AppDatabase.getInstance(this@PostListActivity) as AppDatabase
+//        db.postPackageDao().deleteAll()
         packages = db.postPackageDao().getAll()
         for (p: PostPackage in packages as MutableList) {
             PostsObjects.addItem(p)
@@ -174,6 +184,8 @@ class PostListActivity : AppCompatActivity() {
                 } else {
                     val intent = Intent(v.context, PostDetailActivity::class.java).apply {
                         putExtra(PostDetailFragment.ARG_ITEM_ID, item.id.toString())
+                        putExtra(PostDetailFragment.AUTH0_ACCESS_TOKEN, parentActivity.AUTH0_ACCESS_TOKEN)
+                        putExtra(PostDetailFragment.AUTH0_ID_TOKEN, parentActivity.AUTH0_ID_TOKEN)
                     }
                     v.context.startActivity(intent)
                 }
@@ -255,6 +267,7 @@ class PostListActivity : AppCompatActivity() {
         if (token != null) {
             AUTH0_ACCESS_TOKEN = token
             AUTH0_ID_TOKEN = idtkn
+            trySendImagesNotSent()
         }
 
         // If logged in, notify backend

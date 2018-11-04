@@ -23,6 +23,11 @@ import java.io.IOException
 
 class CreatePostActivity : AppCompatActivity() {
 
+    companion object {
+        const val AUTH0_ACCESS_TOKEN: String = "access_token"
+        const val AUTH0_ID_TOKEN:     String = "id_token"
+    }
+
     private val REQUEST_TAKE_PHOTO = 1
     val REQUEST_IMAGE_CAPTURE = 1
 
@@ -55,6 +60,8 @@ class CreatePostActivity : AppCompatActivity() {
 
             override fun onProviderDisabled(provider: String) {
                 val intent: Intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                intent.putExtra(AUTH0_ACCESS_TOKEN, AUTH0_ACCESS_TOKEN)
+                intent.putExtra(AUTH0_ID_TOKEN, AUTH0_ID_TOKEN)
                 startActivity(intent)
             }
         }
