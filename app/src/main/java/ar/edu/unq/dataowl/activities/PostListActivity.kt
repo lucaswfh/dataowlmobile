@@ -9,9 +9,7 @@ import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -80,7 +78,6 @@ class PostListActivity : AppCompatActivity() {
 
         setupRecyclerView(findViewById(R.id.post_list))
         initializeAuth0()
-        configureLoginLogoutButton()
 
         trySendImagesNotSent()
     }
@@ -208,27 +205,30 @@ class PostListActivity : AppCompatActivity() {
         }
     }
 
-
-    // ++++++++++++++++ Buttons config ++++++++++++++++ //
-
-    private fun configureLoginLogoutButton() {
-        val loginLogoutButton = findViewById<Button>(R.id.loginButtonNew)
-
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.menu_main, menu)
         if (loggedIn())
-            loginLogoutButton.text = "LOG OUT"
+            menu.getItem(0).title = "LOG OUT"
         else
-            loginLogoutButton.text = "LOG IN"
-
-        loginLogoutButton.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                if (loggedIn())
-                    logout()
-                else
-                    login()
-            }
-        })
+            menu.getItem(0).title = "LOG IN"
+        return true
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        if (item.itemId == R.id.action_settings) {
+            if (loggedIn())
+                logout()
+            else
+                login()
+            return true
+        } else {
+            return super.onOptionsItemSelected(item)
+        }
+    }
 
     // ++++++++++++++++ Auth0 Intents ++++++++++++++++ //
 
