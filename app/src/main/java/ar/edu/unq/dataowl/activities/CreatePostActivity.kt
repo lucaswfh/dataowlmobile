@@ -4,13 +4,11 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
-import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
@@ -79,15 +77,21 @@ class CreatePostActivity : AppCompatActivity() {
      */
     private fun configureButtons() {
         configureImageButton1()
-        configureOkButton()
+        configureBottomButtons()
     }
 
-    fun configureOkButton() {
+    fun configureBottomButtons() {
         findViewById<Button>(R.id.buttonOk).setOnClickListener(object: View.OnClickListener {
             override fun onClick(p0: View?) {
                 val postPackage = ih.prepearToSend(bitmap as Bitmap, location, type as String)
                 postPackage.persist(this@CreatePostActivity)
                 showNextActivity()
+            }
+        })
+
+        findViewById<Button>(R.id.buttonCancel).setOnClickListener(object: View.OnClickListener{
+            override fun onClick(v: View?) {
+                finish()
             }
         })
     }
