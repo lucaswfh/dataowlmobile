@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="10"
-    tools:context="ar.edu.unq.dataowl.activities.LoginActivity">
+    tools:context="ar.edu.unq.dataowl.activities.LoginActivity"
+    android:background="@color/colorAccent">
 
     <ImageView
         android:layout_width="match_parent"

@@ -1,11 +1,13 @@
 package ar.edu.unq.dataowl.activities
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
+import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,6 +17,13 @@ import ar.edu.unq.dataowl.model.PostPackage
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_post_detail.*
 import kotlinx.android.synthetic.main.post_detail.view.*
+import android.support.v4.content.res.TypedArrayUtils.getResourceId
+import android.content.res.TypedArray
+import android.widget.Gallery
+
+
+
+
 
 /**
  * A fragment representing a single Post detail screen.

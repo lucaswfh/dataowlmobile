@@ -56,7 +56,8 @@
                 android:value="ar.edu.unq.dataowl.activities.PostListActivity" />
         </activity>
 
-        <activity android:name=".activities.LoginActivity" />
+        <activity android:name=".activities.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="ar.edu.unq.dataowl.fileprovider"
