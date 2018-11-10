@@ -4,25 +4,21 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
-import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import ar.edu.unq.dataowl.PostsObjects
 import ar.edu.unq.dataowl.R
 import ar.edu.unq.dataowl.model.PostPackage
-import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_post_detail.*
 import kotlinx.android.synthetic.main.post_detail.view.*
-import android.support.v4.content.res.TypedArrayUtils.getResourceId
-import android.content.res.TypedArray
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.widget.Gallery
-import kotlinx.android.synthetic.main.activity_post_detail.view.*
+import android.media.Image
+import android.util.Base64
+import android.widget.*
+import kotlinx.android.synthetic.main.post_detail.*
 
 
 /**
@@ -71,6 +67,32 @@ class PostDetailFragment : Fragment() {
                             .append("\nType Selected: ").append(it.type)
                             .append("\nSent Status: ").append(status)
                             .toString()
+
+            val linearLayout: LinearLayout = rootView.findViewById(R.id.gallery)
+            val layoutInflater: LayoutInflater = LayoutInflater.from(activity!!.baseContext )
+
+            for(i in it.images){
+                val view: View = inflater.inflate(R.layout.gallery_item, gallery, false)
+                val byte = Base64.decode(i, 0)
+
+                val imageViewB: ImageButton = view.findViewById(R.id.imageView)
+                imageViewB.setImageBitmap(BitmapFactory.decodeByteArray(byte,0, byte.size))
+                imageViewB.setOnClickListener(object: View.OnClickListener{
+                    override fun onClick(v: View?) {
+                        Toast.makeText(
+                                activity!!.baseContext,
+                                "sarasa",
+                                Toast.LENGTH_SHORT
+                        ).show()
+
+                        //TODO: nuevo activity con la imagen en grande
+                    }
+                })
+
+                linearLayout.addView(view)
+            }
+
+
         }
 
         return rootView
@@ -87,3 +109,4 @@ class PostDetailFragment : Fragment() {
         const val AUTH0_ID_TOKEN:     String = "id_token"
     }
 }
+
