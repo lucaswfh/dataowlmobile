@@ -1,13 +1,16 @@
 package ar.edu.unq.dataowl.activities
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
@@ -41,6 +44,7 @@ class CreatePostActivity : AppCompatActivity() {
     var locationListener: LocationListener? = null
     var location: Location? = null
 
+    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_post)
@@ -65,6 +69,9 @@ class CreatePostActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+
+
+        locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000 , 0f, locationListener)
     }
 
     /**
@@ -87,6 +94,7 @@ class CreatePostActivity : AppCompatActivity() {
 
     private fun showNextActivity() {
         val intent = Intent(this@CreatePostActivity, PostListActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
         finish()
     }

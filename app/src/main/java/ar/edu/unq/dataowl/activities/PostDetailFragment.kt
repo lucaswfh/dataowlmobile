@@ -19,10 +19,10 @@ import kotlinx.android.synthetic.main.activity_post_detail.*
 import kotlinx.android.synthetic.main.post_detail.view.*
 import android.support.v4.content.res.TypedArrayUtils.getResourceId
 import android.content.res.TypedArray
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.widget.Gallery
-
-
-
+import kotlinx.android.synthetic.main.activity_post_detail.view.*
 
 
 /**
@@ -49,6 +49,7 @@ class PostDetailFragment : Fragment() {
                 val a = it.getString(ARG_ITEM_ID)
                 item = PostsObjects.ITEM_MAP[it.getString(ARG_ITEM_ID)]
                 activity?.toolbar_layout?.title = item?.type
+                activity?.toolbar_layout?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#58377e")))
             }
         }
     }
@@ -73,10 +74,11 @@ class PostDetailFragment : Fragment() {
         }
 
         return rootView
+
     }
 
     companion object {
-        /**
+          /**
          * The fragment argument representing the item ID that this fragment
          * represents.
          */
