@@ -16,6 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 import ar.edu.unq.dataowl.PostsObjects
 import ar.edu.unq.dataowl.R
+import ar.edu.unq.dataowl.model.PlantType
 import ar.edu.unq.dataowl.model.PostPackage
 import ar.edu.unq.dataowl.persistence.AppDatabase
 import ar.edu.unq.dataowl.persistence.PostPackageDAO
@@ -83,6 +84,23 @@ class PostListActivity : AppCompatActivity() {
         initializeAuth0()
         
         trySendImagesNotSent()
+
+        testPlantTypes()
+    }
+
+    private fun testPlantTypes() {
+        val service = HttpService()
+        service.service.getPlantTypes().enqueue(object: Callback<List<String>> {
+            override fun onFailure(call: Call<List<String>>?, t: Throwable?) {
+                val a = "asd"
+            }
+
+            override fun onResponse(call: Call<List<String>>?, response: Response<List<String>>?) {
+                val res: List<String>? = response?.body()
+
+            }
+
+        })
     }
 
     private fun trySendImagesNotSent() {
