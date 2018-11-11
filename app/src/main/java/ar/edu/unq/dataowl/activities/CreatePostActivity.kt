@@ -36,6 +36,8 @@ class CreatePostActivity : AppCompatActivity(), View.OnClickListener{
     var mCurrentPhotoPath: String? = null
     var type: String? = null
     var bitmap: Bitmap? = null
+    var bitmaps: MutableList<Bitmap> = mutableListOf<Bitmap>()
+    var tempId: Int? = null
 
     // GPS
     var locationManager: LocationManager? = null
@@ -49,16 +51,6 @@ class CreatePostActivity : AppCompatActivity(), View.OnClickListener{
 
         configureButtons()
         configureList()
-
-
-        val one = findViewById(R.id.imageButton1) as Button
-        one.setOnClickListener(this) // calling onClick() method
-        val two = findViewById(R.id.imageButton2) as Button
-        two.setOnClickListener(this)
-        val three = findViewById(R.id.imageButton3) as Button
-        three.setOnClickListener(this)
-        val three = findViewById(R.id.imageButton4) as Button
-        three.setOnClickListener(this)
 
         this.locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         this.locationListener = object : LocationListener {
@@ -86,14 +78,20 @@ class CreatePostActivity : AppCompatActivity(), View.OnClickListener{
      * configura todos los botones de la activity
      */
     private fun configureButtons() {
-        configureImageButton1()
+
+        findViewById<ImageButton> (R.id.imageButton1).setOnClickListener(this)
+        findViewById<ImageButton> (R.id.imageButton2).setOnClickListener(this)
+        findViewById<ImageButton> (R.id.imageButton3).setOnClickListener(this)
+        findViewById<ImageButton> (R.id.imageButton4).setOnClickListener(this)
+
+        //configureImageButton1()
         configureBottomButtons()
     }
 
     fun configureBottomButtons() {
         findViewById<Button>(R.id.buttonOk).setOnClickListener(object: View.OnClickListener {
             override fun onClick(p0: View?) {
-                val postPackage = ih.prepearToSend(bitmap as Bitmap, location, type as String)
+                val postPackage = ih.prepearToSend(bitmaps, location, type as String)
                 postPackage.persist(this@CreatePostActivity)
                 showNextActivity()
             }
@@ -130,33 +128,30 @@ class CreatePostActivity : AppCompatActivity(), View.OnClickListener{
         }
     }
 
-    private fun configureImageButton1() {
-        findViewById<ImageButton>(R.id.imageButton1).setOnClickListener(object: View.OnClickListener {
-            override fun onClick(p0: View?) {
-                Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-                    // Ensure that there's a camera activity to handle the intent
-                    takePictureIntent.resolveActivity(packageManager)?.also {
-                        // Create the File where the photo should go
-                        val photoFile: File? = try {
-                            createImageFile()
-                        } catch (ex: IOException) {
-                            // Error occurred while creating the File
-                            null
-                        }
-                        // Continue only if the File was successfully created
-                        photoFile?.also {
-                            val photoURI: Uri = FileProvider.getUriForFile(
-                                    this@CreatePostActivity,
-                                    "ar.edu.unq.dataowl.fileprovider",
-                                    it
-                            )
-                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                            startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
-                        }
-                    }
+    override fun onClick(v: View) {
+        this.tempId = v.id
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            // Ensure that there's a camera activity to handle the intent
+            takePictureIntent.resolveActivity(packageManager)?.also {
+                // Create the File where the photo should go
+                val photoFile: File? = try {
+                    createImageFile()
+                } catch (ex: IOException) {
+                    // Error occurred while creating the File
+                    null
+                }
+                // Continue only if the File was successfully created
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                            this@CreatePostActivity,
+                            "ar.edu.unq.dataowl.fileprovider",
+                            it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
                 }
             }
-        })
+        }
     }
 
     // Take photo activity result
@@ -175,7 +170,9 @@ class CreatePostActivity : AppCompatActivity(), View.OnClickListener{
                             .getBitmap(this@CreatePostActivity.getContentResolver(), Uri.fromFile(file))
 
                     if (bitmap != null)
-                        findViewById<ImageButton>(R.id.imageButton1).setImageBitmap(bitmap)
+                        findViewById<ImageButton>(this.tempId as Int).setImageBitmap(bitmap)
+
+                    this.bitmaps.add(bitmap ?: return)
                 }
             }
             else -> {
