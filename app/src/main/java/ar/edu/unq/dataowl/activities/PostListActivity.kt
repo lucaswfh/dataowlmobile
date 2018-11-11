@@ -2,7 +2,9 @@ package ar.edu.unq.dataowl.activities
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
@@ -76,6 +78,17 @@ class PostListActivity : AppCompatActivity() {
             // If this view is present, then the
             // activity should be in two-pane mode.
             twoPane = true
+        }
+
+        //Check-in sdk version
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                requestPermissions(arrayOf<String>(
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION
+                ), 10)
+                return
+            }
         }
 
         createPostList()

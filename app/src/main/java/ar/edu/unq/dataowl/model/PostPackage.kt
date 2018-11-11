@@ -29,4 +29,10 @@ class PostPackage (
         postPackageDao.insert(this)
     }
 
+    fun deletePost(context: Context) {
+        val db: AppDatabase = AppDatabase.getInstance(context) as AppDatabase
+
+        val postPackageDao = db.postPackageDao()
+        postPackageDao.insert(this)
+    }
 }

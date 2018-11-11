@@ -1,5 +1,6 @@
 package ar.edu.unq.dataowl.activities
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -41,6 +42,7 @@ class CreatePostActivity : AppCompatActivity() {
     var locationListener: LocationListener? = null
     var location: Location? = null
 
+    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_post)
@@ -65,6 +67,9 @@ class CreatePostActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+
+
+        locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000 , 0f, locationListener)
     }
 
     /**
@@ -72,10 +77,10 @@ class CreatePostActivity : AppCompatActivity() {
      */
     private fun configureButtons() {
         configureImageButton1()
-        configureOkButton()
+        configureBottomButtons()
     }
 
-    fun configureOkButton() {
+    fun configureBottomButtons() {
         findViewById<Button>(R.id.buttonOk).setOnClickListener(object: View.OnClickListener {
             override fun onClick(p0: View?) {
                 val postPackage = ih.prepearToSend(bitmap as Bitmap, location, type as String)
@@ -83,10 +88,17 @@ class CreatePostActivity : AppCompatActivity() {
                 showNextActivity()
             }
         })
+
+        findViewById<Button>(R.id.buttonCancel).setOnClickListener(object: View.OnClickListener{
+            override fun onClick(v: View?) {
+                finish()
+            }
+        })
     }
 
     private fun showNextActivity() {
         val intent = Intent(this@CreatePostActivity, PostListActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
         finish()
     }
