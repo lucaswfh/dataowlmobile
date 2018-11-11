@@ -10,6 +10,11 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import android.opengl.ETC1.getHeight
+import android.opengl.ETC1.getWidth
+
+
+
 
 class ImageHandler {
 
@@ -24,15 +29,40 @@ class ImageHandler {
         )
     }
 
-    // Converts to byte64 to send
-    fun prepareImageToSend(context: Context, fileLocation: String): String {
-        val b:Bitmap = MediaStore.Images.Media
+    fun getBitmapFromLocation(context: Context, fileLocation: String): Bitmap
+        = MediaStore.Images.Media
                 .getBitmap(context.getContentResolver(), Uri.fromFile(File(fileLocation)))
+
+
+
+    // Converts to byte64 to send
+    fun getBase64FromLocation(context: Context, fileLocation: String): String {
+        val b:Bitmap = getBitmapFromLocation(context, fileLocation)
         val stream = ByteArrayOutputStream()
         b.compress(Bitmap.CompressFormat.JPEG, 75, stream)
         val image: String = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
 
         return image
+    }
+
+    fun getThumbnailFromLocation(context: Context, fileLocation: String): Bitmap {
+        val THUMBNAIL_SIZE = 512
+        var imageBitmap = getBitmapFromLocation(context,fileLocation)
+
+        val outWidth: Int
+        val outHeight: Int
+        val inWidth = imageBitmap.getWidth()
+        val inHeight = imageBitmap.getHeight()
+        if (inWidth > inHeight) {
+            outWidth = THUMBNAIL_SIZE
+            outHeight = inHeight * THUMBNAIL_SIZE / inWidth
+        } else {
+            outHeight = THUMBNAIL_SIZE
+            outWidth = inWidth * THUMBNAIL_SIZE / inHeight
+        }
+
+        return Bitmap.createScaledBitmap(imageBitmap, outWidth, outHeight, false)
+
     }
 
     fun prepearToSend(context: Context, strings: MutableList<String>, location: Location?, type: String): PostPackage{
