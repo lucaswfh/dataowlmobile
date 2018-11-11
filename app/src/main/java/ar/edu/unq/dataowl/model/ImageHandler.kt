@@ -10,10 +10,6 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import android.opengl.ETC1.getHeight
-import android.opengl.ETC1.getWidth
-
-
 
 
 class ImageHandler {
@@ -46,7 +42,7 @@ class ImageHandler {
     }
 
     fun getThumbnailFromLocation(context: Context, fileLocation: String): Bitmap {
-        val THUMBNAIL_SIZE = 512
+        val maxSize = 512
         var imageBitmap = getBitmapFromLocation(context,fileLocation)
 
         val outWidth: Int
@@ -54,11 +50,11 @@ class ImageHandler {
         val inWidth = imageBitmap.getWidth()
         val inHeight = imageBitmap.getHeight()
         if (inWidth > inHeight) {
-            outWidth = THUMBNAIL_SIZE
-            outHeight = inHeight * THUMBNAIL_SIZE / inWidth
+            outWidth = maxSize
+            outHeight = inHeight * maxSize / inWidth
         } else {
-            outHeight = THUMBNAIL_SIZE
-            outWidth = inWidth * THUMBNAIL_SIZE / inHeight
+            outHeight = maxSize
+            outWidth = inWidth * maxSize / inHeight
         }
 
         return Bitmap.createScaledBitmap(imageBitmap, outWidth, outHeight, false)
