@@ -22,7 +22,7 @@ import ar.edu.unq.dataowl.model.ImageHandler
 import java.io.File
 import java.io.IOException
 
-class CreatePostActivity : AppCompatActivity() {
+class CreatePostActivity : AppCompatActivity(), View.OnClickListener{
 
     companion object {
         const val AUTH0_ACCESS_TOKEN: String = "access_token"
@@ -49,6 +49,16 @@ class CreatePostActivity : AppCompatActivity() {
 
         configureButtons()
         configureList()
+
+
+        val one = findViewById(R.id.imageButton1) as Button
+        one.setOnClickListener(this) // calling onClick() method
+        val two = findViewById(R.id.imageButton2) as Button
+        two.setOnClickListener(this)
+        val three = findViewById(R.id.imageButton3) as Button
+        three.setOnClickListener(this)
+        val three = findViewById(R.id.imageButton4) as Button
+        three.setOnClickListener(this)
 
         this.locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         this.locationListener = object : LocationListener {
