@@ -2,6 +2,7 @@ package ar.edu.unq.dataowl.services
 
 import ar.edu.unq.dataowl.model.PlantType
 import ar.edu.unq.dataowl.model.PostPackage
+import ar.edu.unq.dataowl.model.PostPackageUpload
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -19,7 +20,7 @@ interface DataOwlBackendService {
     // accessToken e.g. "Bearer ACCESS_TOKEN_FROM_AUTH0"
 
     @POST("/private/uploadpackage")
-    fun postImage(@Header("authorization") accessToken: String, @Body postPackage: PostPackage): Call<String>
+    fun postImage(@Header("authorization") accessToken: String, @Body postPackage: PostPackageUpload): Call<String>
 
     @POST("/private/userlogin")
     fun userLogIn(@Header("authorization") accessToken: String): Call<String>

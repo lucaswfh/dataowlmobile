@@ -18,6 +18,7 @@ import android.graphics.drawable.ColorDrawable
 import android.media.Image
 import android.util.Base64
 import android.widget.*
+import ar.edu.unq.dataowl.model.ImageHandler
 import kotlinx.android.synthetic.main.post_detail.*
 
 
@@ -73,7 +74,7 @@ class PostDetailFragment : Fragment() {
 
             for(i in it.images){
                 val view: View = inflater.inflate(R.layout.gallery_item, gallery, false)
-                val byte = Base64.decode(i, 0)
+                val byte = Base64.decode(ImageHandler().prepareImageToSend(activity!!.baseContext, i), 0)
 
                 val imageViewB: ImageButton = view.findViewById(R.id.imageView)
                 imageViewB.setImageBitmap(BitmapFactory.decodeByteArray(byte,0, byte.size))

@@ -33,7 +33,7 @@ class CreatePostActivity : AppCompatActivity(), View.OnClickListener{
     val REQUEST_IMAGE_CAPTURE = 1
 
     val ih = ImageHandler()
-    var mCurrentPhotoPath: String? = null
+    var mCurrentPhotoPaths: MutableList<String> = mutableListOf<String>()
     var type: String? = null
     var bitmap: Bitmap? = null
     var bitmaps: MutableList<Bitmap> = mutableListOf<Bitmap>()
@@ -91,7 +91,7 @@ class CreatePostActivity : AppCompatActivity(), View.OnClickListener{
     fun configureBottomButtons() {
         findViewById<Button>(R.id.buttonOk).setOnClickListener(object: View.OnClickListener {
             override fun onClick(p0: View?) {
-                val postPackage = ih.prepearToSend(bitmaps, location, type as String)
+                val postPackage = ih.prepearToSend(this@CreatePostActivity, mCurrentPhotoPaths, location, type as String)
                 postPackage.persist(this@CreatePostActivity)
                 showNextActivity()
             }
@@ -165,7 +165,7 @@ class CreatePostActivity : AppCompatActivity(), View.OnClickListener{
 
                     }
 
-                    val file = File(mCurrentPhotoPath)
+                    val file = File(mCurrentPhotoPaths.last())
                     bitmap = MediaStore.Images.Media
                             .getBitmap(this@CreatePostActivity.getContentResolver(), Uri.fromFile(file))
 
@@ -187,7 +187,7 @@ class CreatePostActivity : AppCompatActivity(), View.OnClickListener{
         val file: File = ih.createImageFile(getExternalFilesDir(Environment.DIRECTORY_PICTURES))
         return file.apply {
             // Save a file: path for use with ACTION_VIEW intents
-            mCurrentPhotoPath = absolutePath
+            mCurrentPhotoPaths.add(absolutePath)
         }
     }
 }

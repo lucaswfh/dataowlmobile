@@ -35,4 +35,9 @@ class PostPackage (
         val postPackageDao = db.postPackageDao()
         postPackageDao.insert(this)
     }
+
+    fun prepareToUpload(context: Context): PostPackageUpload {
+        val imgs: List<String> = this.images.map { i -> ImageHandler().prepareImageToSend(context, i) }
+        return PostPackageUpload(imgs, lat, lng, type)
+    }
 }

@@ -7,18 +7,15 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.Snackbar
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.*
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import ar.edu.unq.dataowl.PostsObjects
 import ar.edu.unq.dataowl.R
-import ar.edu.unq.dataowl.model.PlantType
 import ar.edu.unq.dataowl.model.PostPackage
 import ar.edu.unq.dataowl.persistence.AppDatabase
 import ar.edu.unq.dataowl.persistence.PostPackageDAO
@@ -63,8 +60,6 @@ class PostListActivity : AppCompatActivity() {
 
         val fab = findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener { view ->
-//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null).show()
             val intent = Intent(this, CreatePostActivity::class.java)
             intent.putExtra(PostDetailFragment.AUTH0_ACCESS_TOKEN, AUTH0_ACCESS_TOKEN)
             intent.putExtra(PostDetailFragment.AUTH0_ID_TOKEN, AUTH0_ID_TOKEN)
@@ -148,7 +143,7 @@ class PostListActivity : AppCompatActivity() {
         val service = HttpService()
 
         service.service.postImage(
-                "Bearer " + AUTH0_ACCESS_TOKEN, postPackage
+                "Bearer " + AUTH0_ACCESS_TOKEN, postPackage.prepareToUpload(this)
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>?, t: Throwable?) {
                 Toast.makeText(
