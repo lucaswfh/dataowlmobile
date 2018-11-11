@@ -95,8 +95,6 @@ class PostListActivity : AppCompatActivity() {
 
         setupRecyclerView(findViewById(R.id.post_list))
         initializeAuth0()
-        
-        trySendImagesNotSent()
 
         testPlantTypes()
     }
@@ -163,16 +161,23 @@ class PostListActivity : AppCompatActivity() {
             }
 
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
-                Toast.makeText(
-                        this@PostListActivity,
-                        "Image sent correctly!",
-                        Toast.LENGTH_SHORT
-                ).show()
+                val success: Boolean = response?.isSuccessful() as Boolean
+                if (success) {
+                    Toast.makeText(
+                            this@PostListActivity,
+                            "Image sent correctly!",
+                            Toast.LENGTH_SHORT
+                    ).show()
 
-                postPackage.sent = true
-                dao.update(postPackage)
-
-                // TODO: hacer algo con la respuesta?
+                    postPackage.sent = true
+                    dao.update(postPackage)
+                } else {
+                    Toast.makeText(
+                            this@PostListActivity,
+                            "Image not sent! Retrying on next application start",
+                            Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         })
     }
