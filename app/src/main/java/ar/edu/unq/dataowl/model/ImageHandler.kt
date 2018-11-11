@@ -36,7 +36,7 @@ class ImageHandler {
 
         val postPackageUpload = PostPackage()
 
-        postPackageUpload.images = images
+        postPackageUpload.images = images.toList()
         postPackageUpload.lat = location?.latitude.toString()
         postPackageUpload.lng = location?.longitude.toString()
         postPackageUpload.type = type
