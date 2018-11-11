@@ -98,11 +98,10 @@ class PostListActivity : AppCompatActivity() {
         val service = HttpService()
         service.service.getPlantTypes().enqueue(object: Callback<List<String>> {
             override fun onFailure(call: Call<List<String>>?, t: Throwable?) {
-                val a = "asd"
+
             }
 
             override fun onResponse(call: Call<List<String>>?, response: Response<List<String>>?) {
-                val res: List<String>? = response?.body()
 
             }
 

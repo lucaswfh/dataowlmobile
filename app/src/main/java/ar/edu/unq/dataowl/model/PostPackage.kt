@@ -38,6 +38,7 @@ class PostPackage (
 
     fun prepareToUpload(context: Context): PostPackageUpload {
         val imgs: List<String> = this.images.map { i -> ImageHandler().getBase64FromLocation(context, i) }
-        return PostPackageUpload(imgs, lat, lng, type)
+        val ret= PostPackageUpload(imgs, lat, lng, type)
+        return ret
     }
 }
