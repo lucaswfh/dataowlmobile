@@ -169,8 +169,11 @@ class CreatePostActivity : AppCompatActivity(), View.OnClickListener{
                     bitmap = MediaStore.Images.Media
                             .getBitmap(this@CreatePostActivity.getContentResolver(), Uri.fromFile(file))
 
-                    if (bitmap != null)
-                        findViewById<ImageButton>(this.tempId as Int).setImageBitmap(bitmap)
+                    if (bitmap != null) {
+                        val button = findViewById<ImageButton>(this.tempId as Int)
+                        button?.setImageBitmap(bitmap)
+                        button?.isEnabled = false
+                    }
 
                     this.bitmaps.add(bitmap ?: return)
                 }
