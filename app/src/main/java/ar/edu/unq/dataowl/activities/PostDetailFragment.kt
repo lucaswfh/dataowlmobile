@@ -1,5 +1,6 @@
 package ar.edu.unq.dataowl.activities
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -11,13 +12,14 @@ import ar.edu.unq.dataowl.R
 import ar.edu.unq.dataowl.model.PostPackage
 import kotlinx.android.synthetic.main.activity_post_detail.*
 import kotlinx.android.synthetic.main.post_detail.view.*
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.util.Base64
 import android.widget.*
 import ar.edu.unq.dataowl.model.ImageHandler
 import kotlinx.android.synthetic.main.post_detail.*
+import android.content.DialogInterface
+
+
 
 
 /**
@@ -52,11 +54,10 @@ class PostDetailFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.post_detail, container, false)
-
         item?.let {
             val builder = StringBuilder()
             val status: String
-            if(it.sent)
+            if (it.sent)
                 status = "Yes"
             else
                 status = "No"
@@ -68,7 +69,7 @@ class PostDetailFragment : Fragment() {
                             .toString()
 
             val linearLayout: LinearLayout = rootView.findViewById(R.id.gallery)
-            val layoutInflater: LayoutInflater = LayoutInflater.from(activity!!.baseContext )
+            val layoutInflater: LayoutInflater = LayoutInflater.from(activity!!.baseContext)
 
             for(i in it.images){
                 val view: View = inflater.inflate(R.layout.gallery_item, gallery, false)

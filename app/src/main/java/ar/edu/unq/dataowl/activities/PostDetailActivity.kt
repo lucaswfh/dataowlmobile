@@ -1,12 +1,16 @@
 package ar.edu.unq.dataowl.activities
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
 import ar.edu.unq.dataowl.R
+import ar.edu.unq.dataowl.persistence.AppDatabase
 import kotlinx.android.synthetic.main.activity_post_detail.*
 
 /**
@@ -50,7 +54,6 @@ class PostDetailActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            val a = intent.getStringExtra(PostDetailFragment.ARG_ITEM_ID)
             val fragment = PostDetailFragment().apply {
                 arguments = Bundle().apply {
                     putString(PostDetailFragment.ARG_ITEM_ID,
@@ -62,6 +65,38 @@ class PostDetailActivity : AppCompatActivity() {
                     .add(R.id.post_detail_container, fragment)
                     .commit()
         }
+
+
+        configureDeleteButton()
+    }
+
+    private fun configureDeleteButton() {
+        val button = findViewById<Button>(R.id.deleteButton)
+        button?.setOnClickListener {
+            val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
+                when (which) {
+                    DialogInterface.BUTTON_POSITIVE -> {
+                        val dao = AppDatabase.getInstance(this)?.postPackageDao()
+                        val id = intent.getStringExtra(PostDetailFragment.ARG_ITEM_ID).toInt()
+                        dao?.deleteById(id)
+                        showNextActivity()
+                    }
+                }
+            }
+
+            val builder = AlertDialog.Builder(this)
+            builder
+                    .setMessage("Are you sure?")
+                    .setPositiveButton("Yes", dialogClickListener)
+                    .setNegativeButton("No", dialogClickListener)
+                    .show()
+        }
+    }
+
+    private fun showNextActivity() {
+        val intent = Intent(this , PostListActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     override fun onOptionsItemSelected(item: MenuItem) =

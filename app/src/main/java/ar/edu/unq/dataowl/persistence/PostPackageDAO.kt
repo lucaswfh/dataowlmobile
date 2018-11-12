@@ -17,6 +17,9 @@ interface PostPackageDAO {
     @Delete
     fun delete(postPackage: PostPackage)
 
+    @Query("delete from PostPackage where id = :id")
+    fun deleteById(id: Int)
+
     @Query("delete from PostPackage")
     fun deleteAll()
 

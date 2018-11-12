@@ -41,4 +41,10 @@ class PostPackage (
         val ret= PostPackageUpload(imgs, lat, lng, type)
         return ret
     }
+
+    fun delete(context: Context) {
+        val db: AppDatabase = AppDatabase.getInstance(context) as AppDatabase
+        val postPackageDao = db.postPackageDao()
+        postPackageDao.delete(this)
+    }
 }
