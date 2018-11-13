@@ -78,12 +78,6 @@ class PostDetailFragment : Fragment() {
                 imageViewB.setImageBitmap(ImageHandler().getThumbnailFromLocation(activity!!.baseContext, i))
                 imageViewB.setOnClickListener(object: View.OnClickListener{
                     override fun onClick(v: View?) {
-                        Toast.makeText(
-                                activity!!.baseContext,
-                                "sarasa",
-                                Toast.LENGTH_SHORT
-                        ).show()
-
                         val intent = Intent(activity!!.baseContext, ImageActivity::class.java)
                         intent.putExtra("location", i)
                         startActivity(intent)
