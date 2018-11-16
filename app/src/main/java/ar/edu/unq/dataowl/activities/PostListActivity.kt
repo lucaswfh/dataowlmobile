@@ -74,18 +74,18 @@ class PostListActivity : AppCompatActivity() {
             val dao = AppDatabase.getInstance(this@PostListActivity)?.locationUpdateDao()
             val lastUpdate = dao?.get()
 
-            if (lastUpdate == null) {
-                Toast.makeText(
-                        this@PostListActivity,
-                        "Waiting for GPS, please wait a few seconds and try again!",
-                        Toast.LENGTH_SHORT
-                ).show()
-            } else {
+//            if (lastUpdate == null) {
+//                Toast.makeText(
+//                        this@PostListActivity,
+//                        "Waiting for GPS, please wait a few seconds and try again!",
+//                        Toast.LENGTH_SHORT
+//                ).show()
+//            } else {
                 val intent = Intent(this, CreatePostActivity::class.java)
                 intent.putExtra(PostDetailFragment.AUTH0_ACCESS_TOKEN, AUTH0_ACCESS_TOKEN)
                 intent.putExtra(PostDetailFragment.AUTH0_ID_TOKEN, AUTH0_ID_TOKEN)
                 startActivity(intent)
-            }
+//            }
         }
 
         val post_detail_container = findViewById<NestedScrollView>(R.id.post_detail_container)
@@ -184,8 +184,12 @@ class PostListActivity : AppCompatActivity() {
                                 cm.activeNetworkInfo.type == ConnectivityManager.TYPE_WIFI
 
                 if(p.lat == null && p.lng == null){
-                    p.lat = location?.latitude.toString()
-                    p.lng = location?.longitude.toString()
+                    val db = AppDatabase.getInstance(this@PostListActivity)
+                    val dao = db?.locationUpdateDao()
+                    val lastUpdate = dao?.get() ?: return
+                    p.lat = lastUpdate.lat
+                    p.lng = lastUpdate.lng
+                    db?.postPackageDao().update(p)
                 }
 
                 if (isConnectedToWifi) {
