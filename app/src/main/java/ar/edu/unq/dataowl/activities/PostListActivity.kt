@@ -71,10 +71,21 @@ class PostListActivity : AppCompatActivity() {
 
         val fab = findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener { view ->
-            val intent = Intent(this, CreatePostActivity::class.java)
-            intent.putExtra(PostDetailFragment.AUTH0_ACCESS_TOKEN, AUTH0_ACCESS_TOKEN)
-            intent.putExtra(PostDetailFragment.AUTH0_ID_TOKEN, AUTH0_ID_TOKEN)
-            startActivity(intent)
+            val dao = AppDatabase.getInstance(this@PostListActivity)?.locationUpdateDao()
+            val lastUpdate = dao?.get()
+
+            if (lastUpdate == null) {
+                Toast.makeText(
+                        this@PostListActivity,
+                        "Waiting for GPS, please wait a few seconds and try again!",
+                        Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                val intent = Intent(this, CreatePostActivity::class.java)
+                intent.putExtra(PostDetailFragment.AUTH0_ACCESS_TOKEN, AUTH0_ACCESS_TOKEN)
+                intent.putExtra(PostDetailFragment.AUTH0_ID_TOKEN, AUTH0_ID_TOKEN)
+                startActivity(intent)
+            }
         }
 
         val post_detail_container = findViewById<NestedScrollView>(R.id.post_detail_container)
