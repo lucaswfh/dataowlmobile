@@ -75,6 +75,13 @@ class PostDetailFragment : Fragment() {
                 val view: View = inflater.inflate(R.layout.gallery_item, gallery, false)
 
                 val imageViewB: ImageButton = view.findViewById(R.id.imageView)
+
+                try {
+                    ImageHandler().getThumbnailFromLocation(activity!!.baseContext, i)
+                } catch(e:Exception) {
+
+                }
+
                 imageViewB.setImageBitmap(ImageHandler().getThumbnailFromLocation(activity!!.baseContext, i))
                 imageViewB.setOnClickListener(object: View.OnClickListener{
                     override fun onClick(v: View?) {
