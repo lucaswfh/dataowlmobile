@@ -47,4 +47,10 @@ class PostPackage (
         val postPackageDao = db.postPackageDao()
         postPackageDao.delete(this)
     }
+
+    fun update(context: Context) {
+        val db: AppDatabase = AppDatabase.getInstance(context) as AppDatabase
+        val postPackageDao = db.postPackageDao()
+        postPackageDao.update(this)
+    }
 }

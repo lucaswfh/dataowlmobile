@@ -77,30 +77,27 @@ class PostDetailFragment : Fragment() {
                 val imageViewB: ImageButton = view.findViewById(R.id.imageView)
 
                 try {
-                    ImageHandler().getThumbnailFromLocation(activity!!.baseContext, i)
-                } catch(e:Exception) {
+                    imageViewB.setImageBitmap(ImageHandler().getThumbnailFromLocation(activity!!.baseContext, i))
+                    imageViewB.setOnClickListener(object: View.OnClickListener{
+                        override fun onClick(v: View?) {
+                            val intent = Intent(activity!!.baseContext, ImageActivity::class.java)
+                            intent.putExtra("location", i)
+                            startActivity(intent)
+                        }
+                    })
 
+                    linearLayout.addView(view)
                 }
-
-                imageViewB.setImageBitmap(ImageHandler().getThumbnailFromLocation(activity!!.baseContext, i))
-                imageViewB.setOnClickListener(object: View.OnClickListener{
-                    override fun onClick(v: View?) {
-                        val intent = Intent(activity!!.baseContext, ImageActivity::class.java)
-                        intent.putExtra("location", i)
-                        startActivity(intent)
-
-                        //TODO: nuevo activity con la imagen en grande
-                    }
-                })
-
-                linearLayout.addView(view)
+                catch(e:Exception) {
+                    val tl = it.images.toMutableList()
+                    tl.remove(i)
+                    it.images = tl
+                    it.update(activity!!.baseContext)
+                }
             }
-
-
         }
 
         return rootView
-
     }
 
     companion object {
