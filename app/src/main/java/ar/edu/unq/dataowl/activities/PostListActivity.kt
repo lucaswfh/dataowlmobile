@@ -16,6 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 import ar.edu.unq.dataowl.PostsObjects
 import ar.edu.unq.dataowl.R
+import ar.edu.unq.dataowl.model.PlantType
 import ar.edu.unq.dataowl.model.PostPackage
 import ar.edu.unq.dataowl.persistence.AppDatabase
 import ar.edu.unq.dataowl.persistence.PostPackageDAO
@@ -91,10 +92,10 @@ class PostListActivity : AppCompatActivity() {
         setupRecyclerView(findViewById(R.id.post_list))
         initializeAuth0()
 
-        testPlantTypes()
+        getNewPlantTypes()
     }
 
-    private fun testPlantTypes() {
+    private fun getNewPlantTypes() {
         val service = HttpService()
         service.service.getPlantTypes().enqueue(object: Callback<List<String>> {
             override fun onFailure(call: Call<List<String>>?, t: Throwable?) {
@@ -102,9 +103,17 @@ class PostListActivity : AppCompatActivity() {
             }
 
             override fun onResponse(call: Call<List<String>>?, response: Response<List<String>>?) {
-
+                response?.body()?.forEach { plant: String ->
+                    val dao = AppDatabase.getInstance(this@PostListActivity)?.plantTypeDao()
+                    val exists: PlantType? = dao?.get(plant)
+                    val defaultPlants = resources.getStringArray(R.array.plant_array).toMutableList()
+                    if (exists == null && !defaultPlants.contains(plant)) {
+                        val newType = PlantType()
+                        newType.plantType = plant
+                        dao?.insert(newType)
+                    }
+                }
             }
-
         })
     }
 

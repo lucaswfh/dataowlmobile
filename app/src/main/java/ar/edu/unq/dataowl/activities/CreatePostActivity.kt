@@ -19,6 +19,8 @@ import android.view.View
 import android.widget.*
 import ar.edu.unq.dataowl.R
 import ar.edu.unq.dataowl.model.ImageHandler
+import ar.edu.unq.dataowl.model.PlantType
+import ar.edu.unq.dataowl.persistence.AppDatabase
 import java.io.File
 import java.io.IOException
 
@@ -113,7 +115,19 @@ class CreatePostActivity : AppCompatActivity(), View.OnClickListener{
 
     private fun configureList(){
         val spinner = findViewById<Spinner>(R.id.plant_spinner1)
-        val adapter: ArrayAdapter<CharSequence> = ArrayAdapter.createFromResource(this, R.array.plant_array, android.R.layout.simple_spinner_item);
+        var plants: MutableList<String> = resources.getStringArray(R.array.plant_array).toMutableList()
+
+        val dao = AppDatabase.getInstance(this@CreatePostActivity)?.plantTypeDao()
+        val storedPlants = dao?.getAll()
+        storedPlants?.forEach { plantType: PlantType ->
+            plants.add(plantType.plantType)
+        }
+
+        val adapter = ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                plants
+        )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.setAdapter(adapter)
 
