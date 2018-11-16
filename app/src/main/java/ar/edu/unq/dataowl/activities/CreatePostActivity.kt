@@ -19,6 +19,7 @@ import android.view.View
 import android.widget.*
 import ar.edu.unq.dataowl.R
 import ar.edu.unq.dataowl.model.ImageHandler
+import ar.edu.unq.dataowl.model.LocationUpdate
 import ar.edu.unq.dataowl.model.PlantType
 import ar.edu.unq.dataowl.persistence.AppDatabase
 import java.io.File
@@ -93,7 +94,18 @@ class CreatePostActivity : AppCompatActivity(), View.OnClickListener{
     fun configureBottomButtons() {
         findViewById<Button>(R.id.buttonOk).setOnClickListener(object: View.OnClickListener {
             override fun onClick(p0: View?) {
-                val postPackage = ih.prepearToSend(this@CreatePostActivity, mCurrentPhotoPaths, location, type as String)
+                val update = LocationUpdate()
+                if (location == null) {
+                    val dao = AppDatabase.getInstance(this@CreatePostActivity)?.locationUpdateDao()
+                    val lastUpdate = dao?.get()
+                    update.lat = lastUpdate?.lat as String
+                    update.lng = lastUpdate.lng
+                } else {
+                    update.lat = location?.latitude.toString()
+                    update.lng = location?.longitude.toString()
+                }
+
+                val postPackage = ih.prepearToSend(this@CreatePostActivity, mCurrentPhotoPaths, update, type as String)
                 postPackage.persist(this@CreatePostActivity)
                 showNextActivity()
             }

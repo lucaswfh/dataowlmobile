@@ -20,6 +20,7 @@ import android.widget.TextView
 import android.widget.Toast
 import ar.edu.unq.dataowl.PostsObjects
 import ar.edu.unq.dataowl.R
+import ar.edu.unq.dataowl.model.LocationUpdate
 import ar.edu.unq.dataowl.model.PlantType
 import ar.edu.unq.dataowl.model.PostPackage
 import ar.edu.unq.dataowl.persistence.AppDatabase
@@ -99,8 +100,12 @@ class PostListActivity : AppCompatActivity() {
         this.locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         this.locationListener = object : LocationListener {
             override fun onLocationChanged(lc: Location) {
-                // Called when a new location is found by the network location provider.
-                location = lc
+                val dao = AppDatabase.getInstance(this@PostListActivity)?.locationUpdateDao()
+                dao?.clear()
+                val update = LocationUpdate()
+                update.lat = lc.latitude.toString()
+                update.lng = lc.longitude.toString()
+                dao?.insert(update)
             }
 
             override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
@@ -117,12 +122,18 @@ class PostListActivity : AppCompatActivity() {
 
         locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000 , 0f, locationListener)
 
+        handleLocation()
+
         createPostList()
 
         setupRecyclerView(findViewById(R.id.post_list))
         initializeAuth0()
 
         getNewPlantTypes()
+    }
+
+    private fun handleLocation() {
+
     }
 
     private fun getNewPlantTypes() {

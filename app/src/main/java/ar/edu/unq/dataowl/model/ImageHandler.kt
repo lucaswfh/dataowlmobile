@@ -61,7 +61,7 @@ class ImageHandler {
 
     }
 
-    fun prepearToSend(context: Context, strings: MutableList<String>, location: Location?, type: String): PostPackage{
+    fun prepearToSend(context: Context, strings: MutableList<String>, location: LocationUpdate?, type: String): PostPackage{
 
         val images : MutableList<String> = mutableListOf<String>()
 
@@ -72,8 +72,8 @@ class ImageHandler {
         val postPackageUpload = PostPackage()
 
         postPackageUpload.images = images.toList()
-        postPackageUpload.lat = location?.latitude.toString()
-        postPackageUpload.lng = location?.longitude.toString()
+        postPackageUpload.lat = location?.lat
+        postPackageUpload.lng = location?.lng
         postPackageUpload.type = type
 
         return postPackageUpload
