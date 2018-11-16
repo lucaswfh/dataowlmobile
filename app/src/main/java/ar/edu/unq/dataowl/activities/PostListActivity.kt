@@ -3,9 +3,13 @@ package ar.edu.unq.dataowl.activities
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.AppCompatActivity
@@ -51,6 +55,11 @@ class PostListActivity : AppCompatActivity() {
 
     var packages: List<PostPackage>? = null
 
+    // GPS
+    var locationManager: LocationManager? = null
+    var locationListener: LocationListener? = null
+    var location: Location? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post_list)
@@ -86,6 +95,27 @@ class PostListActivity : AppCompatActivity() {
                 return
             }
         }
+
+        this.locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        this.locationListener = object : LocationListener {
+            override fun onLocationChanged(lc: Location) {
+                // Called when a new location is found by the network location provider.
+                location = lc
+            }
+
+            override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+            override fun onProviderEnabled(provider: String) {}
+
+            override fun onProviderDisabled(provider: String) {
+                val intent: Intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                intent.putExtra(CreatePostActivity.AUTH0_ACCESS_TOKEN, CreatePostActivity.AUTH0_ACCESS_TOKEN)
+                intent.putExtra(CreatePostActivity.AUTH0_ID_TOKEN, CreatePostActivity.AUTH0_ID_TOKEN)
+                startActivity(intent)
+            }
+        }
+
+
+        locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000 , 0f, locationListener)
 
         createPostList()
 
@@ -130,6 +160,11 @@ class PostListActivity : AppCompatActivity() {
                         cm.activeNetworkInfo != null &&
                                 cm.activeNetworkInfo.isConnected &&
                                 cm.activeNetworkInfo.type == ConnectivityManager.TYPE_WIFI
+
+                if(p.lat == null && p.lng == null){
+                    p.lat = location?.latitude.toString()
+                    p.lng = location?.longitude.toString()
+                }
 
                 if (isConnectedToWifi) {
                     uploadImage(p, dao)
