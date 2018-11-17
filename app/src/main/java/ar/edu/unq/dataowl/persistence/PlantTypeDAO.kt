@@ -22,4 +22,7 @@ interface PlantTypeDAO {
 
     @Query("select * from PlantType")
     fun getAll(): List<PlantType>
+
+    @Query("delete from PlantType")
+    fun drop()
 }
