@@ -95,6 +95,7 @@ class PostDetailActivity : AppCompatActivity() {
 
     private fun showNextActivity() {
         val intent = Intent(this , PostListActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
         finish()
     }
