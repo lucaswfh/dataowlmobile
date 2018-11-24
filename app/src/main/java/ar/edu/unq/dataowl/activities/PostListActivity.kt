@@ -158,9 +158,8 @@ class PostListActivity : AppCompatActivity() {
                 response?.body()?.forEach { plant: String ->
                     val dao = AppDatabase.getInstance(this@PostListActivity)?.plantTypeDao()
                     dao?.drop()
-                    val exists: PlantType? = dao?.get(plant)
                     val defaultPlants = resources.getStringArray(R.array.plant_array).toMutableList()
-                    if (exists == null && !defaultPlants.contains(plant)) {
+                    if (!defaultPlants.contains(plant)) {
                         val newType = PlantType()
                         newType.plantType = plant
                         dao?.insert(newType)
@@ -195,7 +194,6 @@ class PostListActivity : AppCompatActivity() {
 
                 if (isConnectedToWifi) {
                     uploadImage(p, dao)
-                    return
                 } else {
                     Toast.makeText(
                             this@PostListActivity,
