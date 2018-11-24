@@ -98,8 +98,10 @@ class CreatePostActivity : AppCompatActivity(), View.OnClickListener{
                 if (location == null) {
                     val dao = AppDatabase.getInstance(this@CreatePostActivity)?.locationUpdateDao()
                     val lastUpdate = dao?.get()
-                    update.lat = lastUpdate?.lat as String
-                    update.lng = lastUpdate.lng
+                    if (lastUpdate != null) {
+                        update.lat = lastUpdate.lat
+                        update.lng = lastUpdate.lng
+                    }
                 } else {
                     update.lat = location?.latitude.toString()
                     update.lng = location?.longitude.toString()
